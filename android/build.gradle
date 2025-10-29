@@ -16,3 +16,16 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+// buildscript {
+//     ext.kotlin_version = '2.2.0' // Hoặc phiên bản Kotlin m đang dùng
+//     repositories {
+//         google()
+//         mavenCentral()
+//     }
+//     dependencies {
+//         // Nâng cấp dòng này:
+//         classpath 'com.android.tools.build:gradle:8.12.1' // Ví dụ: Lên 8.2.0
+//         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+//     }
+// }

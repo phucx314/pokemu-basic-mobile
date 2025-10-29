@@ -13,7 +13,6 @@ dependencies:
   flutter_svg: ^2.1.0
   flutter_tabler_icons: ^1.43.0
   provider: ^6.1.5+1
-  sensors_plus: ^7.0.0
 
 dev_dependencies:
   flutter_test:
