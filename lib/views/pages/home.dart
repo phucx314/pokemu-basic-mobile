@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../common/animations/floating_fx.dart';
 import '../../common/constants/colors.dart';
-import '../../common/utils/interactive_tilt_image_fx.dart';
+import '../../common/animations/interactive_tilt_image_fx.dart';
 import '../components/pokemub_button.dart';
 import '../components/pokemub_text.dart';
 
@@ -21,12 +22,25 @@ class Home extends StatelessWidget {
             children: [
               const SizedBox(height: 48,),
               // Image.network('https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/packs/welcome-pack.webp', height: 400, fit: BoxFit.fitHeight,),
-              const SizedBox(
-                height: 400, // co chieu cao thi fx moi hoat dong dung dc
-                child: InteractiveTiltImage(
-                  imageUrl: 'https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/packs/welcome-pack.webp', imageHeight: 400, boxFit: BoxFit.fitHeight,
-                  maxTiltAngle: 0.75, // Góc nghiêng lớn hơn chút
-                  animationDuration: Duration(milliseconds: 300),
+              // const SizedBox(
+              //   height: 400, // co chieu cao thi fx moi hoat dong dung dc
+              //   child: InteractiveTiltImage(
+              //     imageUrl: 'https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/packs/founders-pack.webp', imageHeight: 400, boxFit: BoxFit.fitHeight,
+              //     maxTiltAngle: 0.75, // Góc nghiêng lớn hơn chút
+              //     animationDuration: Duration(milliseconds: 300),
+              //   ),
+              // ),
+
+              const FloatingWidget(
+                verticalOffset: 32, // floating 32px
+                duration: Duration(milliseconds: 1500), // chu ky 1.5s
+                child: SizedBox(
+                  height: 400, // co chieu cao thi fx moi hoat dong dung dc
+                  child: InteractiveTiltImage(
+                    imageUrl: 'https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/packs/founders-pack.webp', imageHeight: 400, boxFit: BoxFit.fitHeight,
+                    maxTiltAngle: 0.75, // angle
+                    animationDuration: Duration(milliseconds: 300),
+                  ),
                 ),
               ),
               const SizedBox(height: 24,),
