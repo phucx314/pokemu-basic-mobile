@@ -80,10 +80,11 @@ class AuthInterceptor extends QueuedInterceptorsWrapper {
         throw Exception('No refresh token found');
       }
 
+      final req = RefreshTokenRequest(refreshToken: refreshToken);
       // call /refresh api
       final refreshTokenApiResponse = await _refreshDio.post(
         '/auth/refresh',
-        data: refreshToken,
+        data: req.toJson(),
       );
 
       final apiResponse = ApiResponse.fromJson(
