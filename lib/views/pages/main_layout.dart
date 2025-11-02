@@ -5,6 +5,8 @@ import 'package:pokemu_basic_mobile/viewmodels/main_layout_vm.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/constants/colors.dart';
+import '../../common/utils/currency_formatter.dart';
+import '../../viewmodels/auth_vm.dart';
 import '../components/pokemub_text.dart';
 
 class MainLayout extends StatelessWidget {
@@ -12,20 +14,21 @@ class MainLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<MainLayoutVm>();
+    final mainLayoutVm = context.watch<MainLayoutVm>();
+    final authVm = context.watch<AuthVm>();
 
     return Scaffold(
       backgroundColor: pokemubBackgroundColor,
       appBar: AppBar(
         backgroundColor: pokemubBackgroundColor,
         leading: IconButton(icon: const Icon(TablerIcons.menu), onPressed: () {  },),
-        title: const ParkinsansText(text: '@sssteveee', color: pokemubTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+        title: ParkinsansText(text: '@${authVm.currUser?.username ?? 'FAIL_TO_LOAD'}', color: pokemubTextColor, fontSize: 16, fontWeight: FontWeight.bold),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                const ParkinsansText(text: '999,999', color: pokemubTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                ParkinsansText(text: CurrencyFormatter.formatCoin(authVm.currUser?.coinBalance ?? 0), color: pokemubTextColor, fontSize: 16, fontWeight: FontWeight.bold),
                 const SizedBox(width: 8,),
                 Image.asset('assets/images/coin.png', fit: BoxFit.cover, height: 24,),
               ],
@@ -42,13 +45,13 @@ class MainLayout extends StatelessWidget {
         bottomOpacity: 0.4,
       ),
       body: IndexedStack(
-        index: vm.currIndex,
-        children: vm.pages, // danh sach page (lay tu vm)
+        index: mainLayoutVm.currIndex,
+        children: mainLayoutVm.pages, // danh sach page (lay tu vm)
       ),
       bottomNavigationBar: SizedBox(
         height: 80,
         child: BottomNavigationBar(
-          currentIndex: vm.currIndex,
+          currentIndex: mainLayoutVm.currIndex,
           onTap: (index) {
             context.read<MainLayoutVm>().changeTab(index);
             //// same as
@@ -66,7 +69,7 @@ class MainLayout extends StatelessWidget {
                 child: SvgPicture.asset(
                   'assets/icons/card_pack.svg',
                   colorFilter: ColorFilter.mode(
-                    vm.currIndex == 0 ? pokemubPrimaryColor : pokemubTextColor,
+                    mainLayoutVm.currIndex == 0 ? pokemubPrimaryColor : pokemubTextColor,
                     BlendMode.srcIn
                   ),
                   width: 20, // Set kích thước icon
