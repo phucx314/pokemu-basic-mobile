@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pokemu_basic_mobile/common/constants/colors.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_button.dart';
 
@@ -16,6 +15,7 @@ class PokemubTextfield extends StatelessWidget {
     this.actionButtonIcon = Icons.abc,
     this.controller,
     this.actionButtonOnTap,
+    this.error,
   });
 
   final String label;
@@ -26,6 +26,7 @@ class PokemubTextfield extends StatelessWidget {
   final IconData actionButtonIcon;
   final TextEditingController? controller;
   final Function? actionButtonOnTap;
+  final String? error;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class PokemubTextfield extends StatelessWidget {
           height: 60,
           decoration: BoxDecoration(
             color: pokemubBackgroundColor,
-            border: Border.all(color: pokemubTextColor30, width: 2),
+            border: Border.all(color: (error != null) ? pokemubPrimaryColor : pokemubTextColor30, width: 2),
           ),
           child: Align(
             alignment: Alignment.centerLeft,
@@ -66,6 +67,12 @@ class PokemubTextfield extends StatelessWidget {
             ),
           ),
         ),
+        (error != null) ? Column(
+          children: [
+            const SizedBox(height: 4,),
+            ParkinsansText(text: error ?? 'Error', color: pokemubPrimaryColor, fontSize: 12, maxLines: 2, textOverflow: TextOverflow.ellipsis,),
+          ],
+        ) : const SizedBox(),
       ],
     );
   }

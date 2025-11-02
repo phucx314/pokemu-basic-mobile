@@ -47,7 +47,7 @@ class _CreateAccountState extends State<CreateAccount> {
       context.go('${NamedRoutes.login}?username=${registerRequest.username}'); // pass username to login page with url query params
     } else if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: ParkinsansText(text: createAccountVm.errorMessage ?? 'Something went wrong', color: pokemubBackgroundColor,), backgroundColor: pokemubPrimaryColor,),
+        SnackBar(content: ParkinsansText(text: createAccountVm.genericErrorMessage ?? 'Something went wrong', color: pokemubBackgroundColor,), backgroundColor: pokemubPrimaryColor,),
       );
     }
   }
@@ -82,9 +82,9 @@ class _CreateAccountState extends State<CreateAccount> {
                             const SizedBox(height: 24,),
                             const ParkinsansText(text: 'BECOME A PACK OPENER', fontSize: 24, fontWeight: FontWeight.bold,),
                             const SizedBox(height: 16,),
-                            PokemubTextfield(width: MediaQuery.of(context).size.width, label: 'Full name', hintText: 'Enter your full name', controller: _fullNameController,),
+                            PokemubTextfield(width: MediaQuery.of(context).size.width, label: 'Full name', hintText: 'Enter your full name', controller: _fullNameController, error: createAccountVm.fullNameError,),
                             const SizedBox(height: 16,),
-                            PokemubTextfield(width: MediaQuery.of(context).size.width, label: 'Username', hintText: 'Create your username', controller: _usernameController,),
+                            PokemubTextfield(width: MediaQuery.of(context).size.width, label: 'Username', hintText: 'Create your username', controller: _usernameController, error: createAccountVm.usernameError,),
                             const SizedBox(height: 16,),
                             PokemubTextfield(
                               width: MediaQuery.of(context).size.width, 
@@ -97,6 +97,7 @@ class _CreateAccountState extends State<CreateAccount> {
                               }, 
                               isPassword: createAccountVm.isPassword, 
                               controller: _passwordController,
+                              error: createAccountVm.passwordError,
                             ),
                             const SizedBox(height: 16,),
                             PokemubTextfield(
@@ -110,6 +111,7 @@ class _CreateAccountState extends State<CreateAccount> {
                               }, 
                               isPassword: createAccountVm.isPassword2, 
                               controller: _confirmPasswordController,
+                              error: createAccountVm.confirmPasswordError,
                             ),
                             const SizedBox(height: 48,),
                             PokemubButton(
