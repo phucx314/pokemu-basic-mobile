@@ -6,6 +6,8 @@ import 'package:pokemu_basic_mobile/views/pages/login_page.dart';
 import 'package:pokemu_basic_mobile/views/pages/main_layout.dart';
 import 'package:pokemu_basic_mobile/views/pages/splash.dart';
 
+import '../views/pages/pack_open.dart';
+
 class AppRouter {
   final AuthVm authVm;
 
@@ -23,7 +25,8 @@ class AppRouter {
         },
       ),
       GoRoute(path: NamedRoutes.register, builder: (context, state) => const CreateAccount(),),
-      GoRoute(path: NamedRoutes.home, builder: (context, state) => const MainLayout(),),
+      GoRoute(path: NamedRoutes.mainLayout, builder: (context, state) => const MainLayout(),),
+      GoRoute(path: NamedRoutes.packOpen, builder: (context, state) => const PackOpen(),),
     ],
     redirect: (context, state) {
       final isAuthenticated = authVm.isAuthenticated;
@@ -47,7 +50,7 @@ class AppRouter {
       if (isAuthenticated) {
         // kick to home page when at public routes but is authenticated
         if (publicRoutes.contains(state.matchedLocation)) {
-          return NamedRoutes.home;
+          return NamedRoutes.mainLayout;
         }
 
         return null;

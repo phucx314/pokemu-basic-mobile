@@ -36,7 +36,7 @@ class _SplashState extends State<Splash> {
     if (!mounted) return; // IMPORTANT: check 'mounted' before using context
 
     if (isLoggedIn) {
-      context.go(NamedRoutes.home);
+      context.go(NamedRoutes.mainLayout);
     } else {
       context.go(NamedRoutes.login);
     }

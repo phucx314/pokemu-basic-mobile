@@ -37,14 +37,14 @@ class Home extends StatelessWidget {
                 child: SizedBox(
                   height: 400, // co chieu cao thi fx moi hoat dong dung dc
                   child: InteractiveTiltImage(
-                    imageUrl: 'https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/packs/founders-pack.webp', imageHeight: 400, boxFit: BoxFit.fitHeight,
+                    imageUrl: 'https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/packs/day-1.webp', imageHeight: 400, boxFit: BoxFit.fitHeight,
                     maxTiltAngle: 0.75, // angle
                     animationDuration: Duration(milliseconds: 300),
                   ),
                 ),
               ),
               const SizedBox(height: 24,),
-              const ParkinsansText(text: 'Limited Pack available: Promo-A', fontWeight: FontWeight.bold,),
+              const ParkinsansText(text: 'Limited Pack available: Day One', fontWeight: FontWeight.bold,),
               const SizedBox(height: 16,),
               Container(
                 decoration: BoxDecoration(

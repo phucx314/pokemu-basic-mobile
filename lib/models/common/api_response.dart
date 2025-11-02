@@ -15,7 +15,7 @@ class ApiResponse<T> {
     this.pagination,
   });
 
-  factory ApiResponse.fromJson(Map<String, dynamic> json, Function(Map<String, dynamic>) fromJsonT) {
+  factory ApiResponse.fromJson(Map<String, dynamic> json, Function(dynamic) fromJsonT) {
     Map<String, List<String>>? parseErrors;
 
     if (json['errors'] != null) {

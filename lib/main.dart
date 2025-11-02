@@ -6,6 +6,7 @@ import 'package:pokemu_basic_mobile/viewmodels/auth_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/create_account_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/login_page_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/main_layout_vm.dart';
+import 'package:pokemu_basic_mobile/viewmodels/shop_vm.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -14,6 +15,7 @@ List<SingleChildWidget> buildProviders() => [
   ChangeNotifierProvider(create: (context) => AuthVm()),
   ChangeNotifierProvider(create: (context) => LoginPageVm(authVm: context.read<AuthVm>())),
   ChangeNotifierProvider(create: (context) => CreateAccountVm()),
+  ChangeNotifierProvider(create: (context) => ShopVm()),
 ];
 
 Future<void> main() async {
