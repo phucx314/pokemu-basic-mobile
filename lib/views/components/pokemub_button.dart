@@ -3,9 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:pokemu_basic_mobile/common/constants/colors.dart';
 
 import 'pokemub_text.dart';
-import '../../common/utils/extension.dart';
 
-class PokemubButton extends StatelessWidget {
+class PokemubButton extends StatefulWidget {
   const PokemubButton({
     super.key, 
     this.fillColor = pokemubPrimaryColor, 
@@ -19,6 +18,7 @@ class PokemubButton extends StatelessWidget {
     this.borderWidth = 2,
     this.hasIcon = false,
     this.icon = Icons.zoom_in,
+    this.isLoading = false,
   });
 
   final Color? fillColor;
@@ -32,32 +32,41 @@ class PokemubButton extends StatelessWidget {
   final double borderWidth;
   final bool hasIcon;
   final IconData icon;
+  final bool isLoading;
 
   @override
+  State<PokemubButton> createState() => _PokemubButtonState();
+}
+
+class _PokemubButtonState extends State<PokemubButton> {
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      width: width,
-      decoration: BoxDecoration(
-        color: fillColor,
-        border: hasBorder 
-          ? Border.all(
-            color: borderColor,
-            width: borderWidth,
-          ) 
-          : Border.all(
-            color: Colors.black.withOpacity(0),
-            width: 0,
+    return GestureDetector(
+      onTap: () => widget.onTap(),
+      child: Container(
+        height: widget.height,
+        width: widget.width,
+        decoration: BoxDecoration(
+          color: widget.fillColor,
+          border: widget.hasBorder 
+            ? Border.all(
+              color: widget.borderColor,
+              width: widget.borderWidth,
+            ) 
+            : Border.all(
+              color: Colors.black.withOpacity(0),
+              width: 0,
+            ),
+        ),
+        child: Center(
+          child: widget.isLoading ? Center(child: CircularProgressIndicator(color: widget.labelColor),) : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              widget.hasIcon ? Icon(widget.icon) : const SizedBox(),
+              ParkinsansText(
+                text: widget.label, color: widget.labelColor, fontSize: 16, fontWeight: FontWeight.bold),
+            ],
           ),
-      ),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            hasIcon ? Icon(icon) : const SizedBox(),
-            ParkinsansText(
-              text: label, color: labelColor, fontSize: 16, fontWeight: FontWeight.bold),
-          ],
         ),
       ),
     );

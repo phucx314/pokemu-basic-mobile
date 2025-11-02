@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pokemu_basic_mobile/common/constants/colors.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_button.dart';
 
@@ -13,6 +14,8 @@ class PokemubTextfield extends StatelessWidget {
     this.isPassword = false,
     required this.width,
     this.actionButtonIcon = Icons.abc,
+    this.controller,
+    this.actionButtonOnTap,
   });
 
   final String label;
@@ -21,6 +24,8 @@ class PokemubTextfield extends StatelessWidget {
   final bool isPassword;
   final double width;
   final IconData actionButtonIcon;
+  final TextEditingController? controller;
+  final Function? actionButtonOnTap;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +48,8 @@ class PokemubTextfield extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextField(
+                      // key: key,
+                      controller: controller,
                       cursorColor: pokemubPrimaryColor,
                       style: const TextStyle(color: pokemubTextColor, fontSize: 16, fontWeight: FontWeight.normal, height: 1),
                       decoration: InputDecoration(
@@ -53,7 +60,7 @@ class PokemubTextfield extends StatelessWidget {
                       obscureText: isPassword,
                     ),
                   ),
-                  hasActionButton ? PokemubButton(label: '', onTap: () {}, width: 40, height: 40, hasIcon: true, icon: actionButtonIcon, fillColor: pokemubTextColor10,) : const SizedBox(),
+                  hasActionButton ? PokemubButton(label: '', onTap: actionButtonOnTap ?? () {}, width: 40, height: 40, hasIcon: true, icon: actionButtonIcon, fillColor: pokemubTextColor10,) : const SizedBox(),
                 ],
               ),
             ),

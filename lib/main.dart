@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pokemu_basic_mobile/common/constants/colors.dart';
+import 'package:pokemu_basic_mobile/routes/app_router.dart';
+import 'package:pokemu_basic_mobile/viewmodels/auth_vm.dart';
+import 'package:pokemu_basic_mobile/viewmodels/create_account_vm.dart';
+import 'package:pokemu_basic_mobile/viewmodels/login_page_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/main_layout_vm.dart';
-import 'package:pokemu_basic_mobile/views/pages/create_account.dart';
-import 'package:pokemu_basic_mobile/views/pages/main_layout.dart';
-import 'package:pokemu_basic_mobile/views/pages/login_page.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
-void main() {
-  runApp(const MainApp());
+List<SingleChildWidget> buildProviders() => [
+  ChangeNotifierProvider(create: (context) => MainLayoutVm()),
+  ChangeNotifierProvider(create: (context) => AuthVm()),
+  ChangeNotifierProvider(create: (context) => LoginPageVm(authVm: context.read<AuthVm>())),
+  ChangeNotifierProvider(create: (context) => CreateAccountVm()),
+];
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  runApp(MultiProvider(providers: buildProviders(), child: const MainApp()));
 }
 
 class MainApp extends StatelessWidget {
@@ -15,21 +27,17 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => MainLayoutVm()),
-      ],
-      child:  MaterialApp(
-        title: 'PokEmu Basic',
-        theme: ThemeData(
-          fontFamily: 'Parkinsans',
-          colorScheme: ColorScheme.fromSeed(seedColor: pokemubPrimaryColor),
-        ),
-        debugShowCheckedModeBanner: false,
-        // home: const LoginPage(),
-        // home: const CreateAccount(),
-        home: const MainLayout(),
+    final authVm = context.read<AuthVm>();
+    final appRouter = AppRouter(authVm);
+
+    return MaterialApp.router(
+      title: 'PokEmu Basic',
+      theme: ThemeData(
+        fontFamily: 'Parkinsans',
+        colorScheme: ColorScheme.fromSeed(seedColor: pokemubPrimaryColor),
       ),
+      debugShowCheckedModeBanner: false,
+      routerConfig: appRouter.router,
     );
   }
 }
