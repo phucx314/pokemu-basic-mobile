@@ -13,7 +13,9 @@ import 'package:provider/provider.dart';
 import '../components/pokemub_text.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({super.key, this.username});
+
+  final String? username;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -28,6 +30,15 @@ class _LoginPageState extends State<LoginPage> {
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    
+    if (widget.username != null) {
+      _usernameController.text = widget.username!;
+    }
   }
 
   void _handleLogin() async {

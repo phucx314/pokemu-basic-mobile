@@ -68,6 +68,7 @@ class AuthInterceptor extends QueuedInterceptorsWrapper {
         return handler.next(err);
       }
     }
+    return handler.next(err); // lúc đầu t ko viết cái này
   }
 
   // function to refresh token, return new accessToken (or null)

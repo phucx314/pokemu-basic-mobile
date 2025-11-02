@@ -15,7 +15,13 @@ class AppRouter {
     refreshListenable: authVm,
     routes: [
       GoRoute(path: NamedRoutes.splash, builder: (context, state) => const Splash(),),
-      GoRoute(path: NamedRoutes.login, builder: (context, state) => const LoginPage(),),
+      GoRoute(
+        path: NamedRoutes.login, 
+        builder: (context, state) { 
+          final username = state.uri.queryParameters['username'];
+          return LoginPage(username: username);
+        },
+      ),
       GoRoute(path: NamedRoutes.register, builder: (context, state) => const CreateAccount(),),
       GoRoute(path: NamedRoutes.home, builder: (context, state) => const MainLayout(),),
     ],

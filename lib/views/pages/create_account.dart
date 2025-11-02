@@ -42,9 +42,9 @@ class _CreateAccountState extends State<CreateAccount> {
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: ParkinsansText(text: 'Account created', color: pokemubBackgroundColor,), backgroundColor: pokemubPrimaryColor,),
+        const SnackBar(content: ParkinsansText(text: 'Account created. Log in to the vault', color: pokemubBackgroundColor,), backgroundColor: pokemubPrimaryColor,),
       );
-      context.go('/login/${registerRequest.username}'); // pass username to login page
+      context.go('${NamedRoutes.login}?username=${registerRequest.username}'); // pass username to login page with url query params
     } else if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: ParkinsansText(text: createAccountVm.errorMessage ?? 'Something went wrong', color: pokemubBackgroundColor,), backgroundColor: pokemubPrimaryColor,),

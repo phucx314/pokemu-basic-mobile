@@ -6,31 +6,25 @@ import '../models/auth.dart';
 
 class CreateAccountVm extends ChangeNotifier {
   final AuthService _authService = AuthService();
-  final TokenStorageService _tokenStorageService = TokenStorageService();
 
   bool _isLoading = false;
   String? _errorMessage;
-  AuthInfo? _authInfo;
   bool _isPassword = true;
   bool _isPassword2 = true;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-  AuthInfo? get authInfo => _authInfo;
-  bool get isAuthenticated => _authInfo != null; // getter tiện lợi
   bool get isPassword => _isPassword;
   bool get isPassword2 => _isPassword2;
 
   void _setState({
     bool? loading,
     String? errorMessage,
-    AuthInfo? authInfo,
     bool? isPassword,
     bool? isPassword2,
   }) {
     _isLoading = loading ?? _isLoading;
     _errorMessage = errorMessage;
-    _authInfo = authInfo;
     _isPassword = isPassword ?? _isPassword;
     _isPassword2 = isPassword2 ?? _isPassword2;
     notifyListeners();

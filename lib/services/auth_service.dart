@@ -42,8 +42,10 @@ class AuthService {
 
       final jsonBody = res.data;
 
+      print(jsonBody);
+
       // reg successfully not returns any data
-      return ApiResponse.fromJson(jsonBody, (_) => null);
+      return ApiResponse<void>.fromJson(jsonBody, (_) => null);
     } on DioException catch (e) {
       return DioExceptions().handleDioError(e);
     } catch (e) {
