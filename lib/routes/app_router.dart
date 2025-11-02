@@ -21,15 +21,31 @@ class AppRouter {
     ],
     redirect: (context, state) {
       final isAuthenticated = authVm.isAuthenticated;
-      final isAtSplash = state.matchedLocation == NamedRoutes.splash;
-      final isAtLogin = state.matchedLocation == NamedRoutes.login;
-      final isAtRegister = state.matchedLocation == NamedRoutes.register;
 
-      if (isAtSplash) return null; // if at splash, let it run
+      final publicRoutes = {
+        NamedRoutes.login,
+        NamedRoutes.register,
+      };
 
-      if (!isAuthenticated && !isAtLogin && !isAtRegister) return NamedRoutes.login; // kick to login page
+      if (state.matchedLocation == NamedRoutes.splash) return null; // if at splash, let it run
 
-      if (isAuthenticated && (isAtLogin || isAtRegister)) return NamedRoutes.home;
+      if (!isAuthenticated) {
+        if (publicRoutes.contains(state.matchedLocation)) {
+          return null;
+        }
+
+        // kick to login page when at private routes and not authenticated
+        return NamedRoutes.login;
+      } 
+
+      if (isAuthenticated) {
+        // kick to home page when at public routes but is authenticated
+        if (publicRoutes.contains(state.matchedLocation)) {
+          return NamedRoutes.home;
+        }
+
+        return null;
+      }
 
       return null; 
     },
