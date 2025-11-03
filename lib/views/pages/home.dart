@@ -28,8 +28,9 @@ class Home extends StatelessWidget {
               homeVm.isLoading 
                 ? const SizedBox(height: 400, child: Center(child: PokemubLoading(),),)
                 : Expanded(
-                    child: ListView.builder(
-                      controller: PageController(viewportFraction: 0.8),
+                    child: PageView.builder(
+                      allowImplicitScrolling: true, // pre-load side-by-side pages (item) -> avoid animation inconsistency due to lazy loading
+                      controller: PageController(viewportFraction: 0.7), // takes 70% width
                       clipBehavior: Clip.none,
                       scrollDirection: Axis.horizontal,
                       itemCount: homeVm.featuredPacks.length,
