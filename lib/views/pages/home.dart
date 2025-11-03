@@ -47,23 +47,35 @@ class Home extends StatelessWidget {
                               const SizedBox(height: 24,),
                               ParkinsansText(text: pack.packName, fontWeight: FontWeight.bold,),
                               const SizedBox(height: 16,),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: pokemubTextColor10,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      ParkinsansText(text: 'Price: ${pack.price}', fontSize: 12,),
-                                      const SizedBox(width: 4,),
-                                      Image.asset('assets/images/coin.png', height: 16,),
-                                      const ParkinsansText(text: ' • ', fontSize: 12,),
-                                      ParkinsansText(text: '${pack.globalQuantity} left', fontSize: 12,),
-                                    ],
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: pokemubTextColor10,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        ParkinsansText(text: '${pack.price}', fontSize: 12,),
+                                        const SizedBox(width: 4,),
+                                        Image.asset('assets/images/coin.png', height: 16,),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                  const SizedBox(width: 4,),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: pokemubTextColor10,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        ParkinsansText(text: '${pack.globalQuantity} left', fontSize: 12,),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 16,),
                               PokemubButton(label: 'Open', onTap: () {}, height: 36,)

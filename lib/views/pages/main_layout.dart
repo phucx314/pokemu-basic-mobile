@@ -23,38 +23,43 @@ class MainLayout extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: pokemubBackgroundColor,
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.network(authVm.currUser?.avatar ?? '', fit: BoxFit.cover, height: 24,),
-            const SizedBox(width: 8,),
-            ParkinsansText(text: '@${authVm.currUser?.username ?? 'FAIL_TO_LOAD'}', color: pokemubTextColor, fontSize: 16, fontWeight: FontWeight.bold),
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
+            Row(
               children: [
-                Image.asset('assets/images/coin.png', fit: BoxFit.cover, height: 24,),
+                Image.network(authVm.currUser?.avatar ?? '', fit: BoxFit.cover, height: 24,),
                 const SizedBox(width: 8,),
-                ParkinsansText(text: CurrencyFormatter.formatCoin(authVm.currUser?.coinBalance ?? 0), color: pokemubTextColor, fontSize: 16, fontWeight: FontWeight.bold),
-                const SizedBox(width: 8,),
-                PokemubButton(
-                  height: 20,
-                  width: 20,
-                  label: '', 
-                  onTap: () {}, 
-                  hasBorder: true, 
-                  hasIcon: true, 
-                  borderColor: pokemubTextColor, 
-                  borderWidth: 1, 
-                  fillColor: pokemubBackgroundColor, 
-                  icon: TablerIcons.plus,
-                  iconSize: 16,
-                ),
+                ParkinsansText(text: '@${authVm.currUser?.username ?? 'FAIL_TO_LOAD'}', color: pokemubTextColor, fontSize: 16, fontWeight: FontWeight.bold),
               ],
             ),
-          ),
-        ],
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/coin.png', fit: BoxFit.cover, height: 24,),
+                  const SizedBox(width: 8,),
+                  ParkinsansText(text: CurrencyFormatter.formatCoin(authVm.currUser?.coinBalance ?? 0), color: pokemubTextColor, fontSize: 16, fontWeight: FontWeight.bold, textOverflow: TextOverflow.ellipsis,),
+                  const SizedBox(width: 8,),
+                  PokemubButton(
+                    height: 20,
+                    width: 20,
+                    label: '', 
+                    onTap: () {}, 
+                    hasBorder: true, 
+                    hasIcon: true, 
+                    borderColor: pokemubTextColor, 
+                    borderWidth: 1, 
+                    fillColor: pokemubBackgroundColor, 
+                    icon: TablerIcons.plus,
+                    iconSize: 16,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(2),
           child: Container(
