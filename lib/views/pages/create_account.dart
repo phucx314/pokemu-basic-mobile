@@ -47,7 +47,7 @@ class _CreateAccountState extends State<CreateAccount> {
       context.go('${NamedRoutes.login}?username=${registerRequest.username}'); // pass username to login page with url query params
     } else if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: ParkinsansText(text: createAccountVm.genericErrorMessage ?? 'Something went wrong', color: pokemubBackgroundColor,), backgroundColor: pokemubPrimaryColor,),
+        SnackBar(content: ParkinsansText(text: createAccountVm.genericErrorMessage ?? 'Something went wrong', color: pokemubBackgroundColor, maxLines: 5, textOverflow: TextOverflow.ellipsis,), backgroundColor: pokemubPrimaryColor,),
       );
     }
   }

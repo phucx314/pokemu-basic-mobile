@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: ParkinsansText(text: loginPageVm.errorMessage ?? 'Something went wrong', color: pokemubBackgroundColor,), backgroundColor: pokemubPrimaryColor,),
+        SnackBar(content: ParkinsansText(text: loginPageVm.errorMessage ?? 'Something went wrong', color: pokemubBackgroundColor, maxLines: 5, textOverflow: TextOverflow.ellipsis,), backgroundColor: pokemubPrimaryColor,),
       );
     }
   }

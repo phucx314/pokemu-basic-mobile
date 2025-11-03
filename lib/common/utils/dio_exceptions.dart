@@ -16,10 +16,40 @@ class DioExceptions {
       }
     }
 
-    // Lỗi chung (timeout, không có mạng, 503...)
+    // Không có response → xử lý theo type lỗi
+    String message;
+    int code = 500;
+
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+        code = 408;
+        message = 'Connection timed out. Please check your internet connection';
+        break;
+      case DioExceptionType.receiveTimeout:
+        code = 504;
+        message = 'Server took too long to respond. Please try again later';
+        break;
+      case DioExceptionType.badCertificate:
+        code = 495;
+        message = 'SSL certificate error. Please verify your network';
+        break;
+      case DioExceptionType.connectionError:
+        code = 503;
+        message = 'Unable to reach the server. Please check your connection';
+        break;
+      case DioExceptionType.cancel:
+        code = 499;
+        message = 'Request was cancelled';
+        break;
+      default:
+        code = 500;
+        message = e.message ?? 'Unexpected network error occurred';
+        break;
+    }
+
     return ApiResponse<T>(
-      statusCode: e.response?.statusCode ?? 503, // 503 Service Unavailable
-      message: e.message ?? 'A network or server error occurred.',
+      statusCode: code,
+      message: message,
       data: null,
     );
   }
