@@ -7,6 +7,7 @@ class InteractiveTiltImage extends StatefulWidget {
 
   final BoxFit boxFit;
   final double imageHeight;
+  final double imageOpacity;
   // final double? imageWidth;
 
   const InteractiveTiltImage({
@@ -16,6 +17,7 @@ class InteractiveTiltImage extends StatefulWidget {
     this.animationDuration = const Duration(milliseconds: 200), 
     this.boxFit = BoxFit.cover, 
     this.imageHeight = 100, 
+    this.imageOpacity = 1,
     // this.imageWidth = 100,
   });
 
@@ -95,6 +97,7 @@ class _InteractiveTiltImageState extends State<InteractiveTiltImage> with Single
               widget.imageUrl,
               fit: widget.boxFit,
               height: widget.imageHeight,
+              opacity: AlwaysStoppedAnimation(widget.imageOpacity),
             ),
           ),
         );

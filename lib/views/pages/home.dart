@@ -4,6 +4,7 @@ import 'package:pokemu_basic_mobile/views/components/pokemub_loading.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/constants/colors.dart';
+import '../../common/utils/currency_formatter.dart';
 import '../components/home/floating_pack.dart';
 import '../components/pokemub_button.dart';
 import '../components/pokemub_text.dart';
@@ -24,7 +25,9 @@ class Home extends StatelessWidget {
           
           Column(
             children: [
-              const SizedBox(height: 48,),
+              const SizedBox(height: 24,),
+              const MomoSignatureText(text: 'Featured packs', fontSize: 24, color: pokemubTextColor, fontWeight: FontWeight.bold,),
+              const SizedBox(height: 24,),
               homeVm.isLoading 
                 ? const SizedBox(height: 400, child: Center(child: PokemubLoading(),),)
                 : Expanded(
@@ -43,6 +46,7 @@ class Home extends StatelessWidget {
                               FloatingPack(
                                 id: pack.id,
                                 packImage: pack.packImage,
+                                isSoldOut: (pack.globalQuantity.toString() == '0') ? true : false,
                               ),
                               const SizedBox(height: 24,),
                               ParkinsansText(text: pack.packName, fontWeight: FontWeight.bold,),
@@ -57,7 +61,7 @@ class Home extends StatelessWidget {
                                     ),
                                     child: Row(
                                       children: [
-                                        ParkinsansText(text: '${pack.price}', fontSize: 12,),
+                                        ParkinsansText(text: CurrencyFormatter.formatCoin(pack.price), fontSize: 12,),
                                         const SizedBox(width: 4,),
                                         Image.asset('assets/images/coin.png', height: 16,),
                                       ],
@@ -67,18 +71,20 @@ class Home extends StatelessWidget {
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: pokemubTextColor10,
+                                      color: pack.globalQuantity.toString() != '0' ? pokemubTextColor10 : pokemubPrimaryColor.withOpacity(0.5),
                                     ),
                                     child: Row(
                                       children: [
-                                        ParkinsansText(text: '${pack.globalQuantity} left', fontSize: 12,),
+                                        pack.globalQuantity == null 
+                                          ? const ParkinsansText(text: 'unlimited', fontSize: 12,)
+                                          : ParkinsansText(text: '${CurrencyFormatter.formatCoin(pack.globalQuantity!)} left', fontSize: 12,),
                                       ],
                                     ),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 16,),
-                              PokemubButton(label: 'Open', onTap: () {}, height: 36,)
+                              PokemubButton(label: 'Open', onTap: () {}, height: 36,),
                             ],
                           ),
                         );

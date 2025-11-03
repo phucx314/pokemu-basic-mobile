@@ -29,7 +29,7 @@ class Shop extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 24,),
-                const ParkinsansText(text: 'SHOP', color: pokemubTextColor, fontSize: 24, fontWeight: FontWeight.bold,),
+                const MomoSignatureText(text: 'Shop', color: pokemubTextColor, fontSize: 24, fontWeight: FontWeight.bold,),
                 PokemubTextfield(
                   label: '', 
                   hintText: 'Search pack name', 
@@ -52,17 +52,20 @@ class Shop extends StatelessWidget {
                             crossAxisCount: 2,
                             mainAxisSpacing: 24,
                             crossAxisSpacing: 16,
-                            childAspectRatio: 0.489,
+                            childAspectRatio: 0.43,
                           ), 
                           itemCount: shopVm.filteredPacks.length,
                           itemBuilder: (context, index) {
+                            final pack = shopVm.filteredPacks[index];
+
                             return SizedBox(
                               height: 12, 
                               width: 12,
                               child: ShopPack(
-                                packImageUrl: shopVm.filteredPacks[index].packImage,
-                                packName: shopVm.filteredPacks[index].packName,
-                                stock: shopVm.filteredPacks[index].globalQuantity ?? 99999999999999,
+                                packImageUrl: pack.packImage,
+                                packName: pack.packName,
+                                stock: pack.globalQuantity ?? 99999999999999, 
+                                price: pack.price,
                               ),
                             );
                           },

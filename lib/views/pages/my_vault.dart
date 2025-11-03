@@ -22,7 +22,7 @@ class MyVault extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 24,),
-                  const ParkinsansText(text: 'VAULT', color: pokemubTextColor, fontSize: 24, fontWeight: FontWeight.bold,),
+                  const MomoSignatureText(text: 'My vault', color: pokemubTextColor, fontSize: 24, fontWeight: FontWeight.bold,),
                   PokemubTextfield(label: '', hintText: 'Search card name', width: MediaQuery.of(context).size.width, hasActionButton: true, actionButtonIcon: TablerIcons.search,),
                   const SizedBox(height: 16,),
                   Expanded(
