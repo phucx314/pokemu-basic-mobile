@@ -39,12 +39,8 @@ class Home extends StatelessWidget {
                           child: Column(
                             children: [
                               FloatingPack(
-                                id: homeVm.featuredPacks[index].id, 
-                                packName: homeVm.featuredPacks[index].packName, 
+                                id: homeVm.featuredPacks[index].id,
                                 packImage: homeVm.featuredPacks[index].packImage,
-                                cardQuantity: homeVm.featuredPacks[index].cardQuantity,
-                                globalQuantity: homeVm.featuredPacks[index].globalQuantity ?? 99999999999,
-                                price: homeVm.featuredPacks[index].price,
                               ),
                               const SizedBox(height: 24,),
                               ParkinsansText(text: homeVm.featuredPacks[index].packName, fontWeight: FontWeight.bold,),
@@ -84,14 +80,10 @@ class Home extends StatelessWidget {
 }
 
 class FloatingPack extends StatelessWidget {
-  const FloatingPack({super.key, required this.id, required this.packName, required this.packImage, required this.price, required this.globalQuantity, required this.cardQuantity});
+  const FloatingPack({super.key, required this.id, required this.packImage});
 
   final int id;
-  final String packName;
   final String packImage;
-  final int price;
-  final int globalQuantity;
-  final int cardQuantity;
 
   @override
   Widget build(BuildContext context) {

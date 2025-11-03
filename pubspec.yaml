@@ -25,6 +25,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/pokemu_app_icon_512.png"
+  adaptive_icon_background: "assets/icons/back512.png"
+  adaptive_icon_foreground: "assets/icons/fore512.png"
+  min_sdk_android: 25
 
 flutter:
   uses-material-design: true
@@ -50,3 +58,4 @@ flutter:
           weight: 700
         - asset: assets/fonts/Parkinsans-ExtraBold.ttf
           weight: 800
+  
