@@ -35,14 +35,14 @@ class AuthInfo {
   final String username;
   final String fullName;
   final int coinBalance;
-  final String? avatar;
+  final String avatar;
 
   AuthInfo({
     required this.id,
     required this.username,
     required this.fullName,
     required this.coinBalance,
-    this.avatar 
+    this.avatar = 'https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/user-contents/default_avatar.png'
   });
 
   factory AuthInfo.fromJson(Map<String, dynamic> json) {

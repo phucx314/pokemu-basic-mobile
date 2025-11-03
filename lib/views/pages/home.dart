@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pokemu_basic_mobile/viewmodels/home_vm.dart';
+import 'package:pokemu_basic_mobile/views/components/pokemub_loading.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/animations/floating_fx.dart';
 import '../../common/constants/colors.dart';
@@ -11,6 +14,8 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final homeVm = context.watch<HomeVm>();
+
     return SafeArea(
       child: Stack(
         clipBehavior: Clip.none,
@@ -21,52 +26,85 @@ class Home extends StatelessWidget {
           Column(
             children: [
               const SizedBox(height: 48,),
-              // Image.network('https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/packs/welcome-pack.webp', height: 400, fit: BoxFit.fitHeight,),
-              // const SizedBox(
-              //   height: 400, // co chieu cao thi fx moi hoat dong dung dc
-              //   child: InteractiveTiltImage(
-              //     imageUrl: 'https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/packs/founders-pack.webp', imageHeight: 400, boxFit: BoxFit.fitHeight,
-              //     maxTiltAngle: 0.75, // Góc nghiêng lớn hơn chút
-              //     animationDuration: Duration(milliseconds: 300),
-              //   ),
-              // ),
-
-              const FloatingWidget(
-                verticalOffset: 32, // floating 32px
-                duration: Duration(milliseconds: 1500), // chu ky 1.5s
-                child: SizedBox(
-                  height: 400, // co chieu cao thi fx moi hoat dong dung dc
-                  child: InteractiveTiltImage(
-                    imageUrl: 'https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/packs/day-1.webp', imageHeight: 400, boxFit: BoxFit.fitHeight,
-                    maxTiltAngle: 0.75, // angle
-                    animationDuration: Duration(milliseconds: 300),
+              homeVm.isLoading 
+                ? const SizedBox(height: 400, child: Center(child: PokemubLoading(),),)
+                : Expanded(
+                    child: ListView.builder(
+                      clipBehavior: Clip.none,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: homeVm.featuredPacks.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            children: [
+                              FloatingPack(
+                                id: homeVm.featuredPacks[index].id, 
+                                packName: homeVm.featuredPacks[index].packName, 
+                                packImage: homeVm.featuredPacks[index].packImage,
+                                cardQuantity: homeVm.featuredPacks[index].cardQuantity,
+                                globalQuantity: homeVm.featuredPacks[index].globalQuantity ?? 99999999999,
+                                price: homeVm.featuredPacks[index].price,
+                              ),
+                              const SizedBox(height: 24,),
+                              ParkinsansText(text: homeVm.featuredPacks[index].packName, fontWeight: FontWeight.bold,),
+                              const SizedBox(height: 16,),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: pokemubTextColor10,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ParkinsansText(text: 'Price: ${homeVm.featuredPacks[index].price}', fontWeight: FontWeight.bold,),
+                                      const ParkinsansText(text: ' • ', fontWeight: FontWeight.bold,),
+                                      ParkinsansText(text: 'Stock: ${homeVm.featuredPacks[index].globalQuantity}', fontWeight: FontWeight.bold,),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16,),
+                              PokemubButton(label: 'Open', onTap: () {}, height: 36,)
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 24,),
-              const ParkinsansText(text: 'Limited Pack available: Day One', fontWeight: FontWeight.bold,),
-              const SizedBox(height: 16,),
-              Container(
-                decoration: BoxDecoration(
-                  color: pokemubTextColor10,
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ParkinsansText(text: 'Price: 250', fontWeight: FontWeight.bold,),
-                      ParkinsansText(text: ' • ', fontWeight: FontWeight.bold,),
-                      ParkinsansText(text: 'Stock: 16', fontWeight: FontWeight.bold,),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16,),
-              PokemubButton(label: 'Open', onTap: () {}, height: 36,)
+                  //
+                  //
             ],
           )
         ],
+      ),
+    );
+  }
+}
+
+class FloatingPack extends StatelessWidget {
+  const FloatingPack({super.key, required this.id, required this.packName, required this.packImage, required this.price, required this.globalQuantity, required this.cardQuantity});
+
+  final int id;
+  final String packName;
+  final String packImage;
+  final int price;
+  final int globalQuantity;
+  final int cardQuantity;
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingWidget(
+      verticalOffset: 32, // floating 32px
+      duration: const Duration(milliseconds: 1500), // chu ky 1.5s
+      child: SizedBox(
+        height: 400, // co chieu cao thi fx moi hoat dong dung dc
+        child: InteractiveTiltImage(
+          imageUrl: packImage, imageHeight: 400, boxFit: BoxFit.fitHeight,
+          maxTiltAngle: 0.0, // angle
+          animationDuration: const Duration(milliseconds: 300),
+        ),
       ),
     );
   }

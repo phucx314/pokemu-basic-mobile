@@ -18,6 +18,8 @@ class PokemubButton extends StatefulWidget {
     this.borderWidth = 2,
     this.hasIcon = false,
     this.icon = Icons.zoom_in,
+    this.iconSize = 24,
+    this.labelSize = 16,
     this.isLoading = false,
   });
 
@@ -33,6 +35,8 @@ class PokemubButton extends StatefulWidget {
   final bool hasIcon;
   final IconData icon;
   final bool isLoading;
+  final double iconSize;
+  final double labelSize;
 
   @override
   State<PokemubButton> createState() => _PokemubButtonState();
@@ -62,9 +66,9 @@ class _PokemubButtonState extends State<PokemubButton> {
           child: widget.isLoading ? Center(child: CircularProgressIndicator(color: widget.labelColor),) : Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              widget.hasIcon ? Icon(widget.icon) : const SizedBox(),
+              widget.hasIcon ? Icon(widget.icon, size: widget.iconSize,) : const SizedBox(),
               ParkinsansText(
-                text: widget.label, color: widget.labelColor, fontSize: 16, fontWeight: FontWeight.bold),
+                text: widget.label, color: widget.labelColor, fontSize: widget.labelSize, fontWeight: FontWeight.bold),
             ],
           ),
         ),

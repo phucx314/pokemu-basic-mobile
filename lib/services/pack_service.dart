@@ -28,4 +28,25 @@ class PackService {
       return DioExceptions().handleGenericError(e);
     }
   }
+
+  //// GET FEATURED PACKS
+  Future<ApiResponse<List<Pack>>> getFeaturedPacks() async {
+    try {
+      final res = await _dio.get('/pack/list-featured');
+
+      final jsonBody = res.data;
+
+      final apiResponse = ApiResponse<List<Pack>>.fromJson(jsonBody, (data) {
+        final listData = data as List<dynamic>;
+        
+        return listData.map((pack) => Pack.fromJson(pack as Map<String, dynamic>)).toList(); // 
+      });
+
+      return apiResponse;
+    } on DioException catch (e) {
+      return DioExceptions().handleDioError(e);
+    } catch (e) {
+      return DioExceptions().handleGenericError(e);
+    }
+  }
 }

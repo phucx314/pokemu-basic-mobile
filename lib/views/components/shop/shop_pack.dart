@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../common/constants/colors.dart';
+import '../../../common/utils/currency_formatter.dart';
 import '../pokemub_text.dart';
 
 class ShopPack extends StatelessWidget {
@@ -24,7 +25,7 @@ class ShopPack extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: ParkinsansText(text: 'Stock: $stock', fontWeight: FontWeight.bold, fontSize: 12,),
+            child: ParkinsansText(text: 'Stock: ${CurrencyFormatter.formatCoin(stock)}', fontWeight: FontWeight.bold, fontSize: 12,),
           ),
         ),
       ],

@@ -10,12 +10,15 @@ import 'package:pokemu_basic_mobile/viewmodels/shop_vm.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
+import 'viewmodels/home_vm.dart';
+
 List<SingleChildWidget> buildProviders() => [
   ChangeNotifierProvider(create: (context) => MainLayoutVm()),
   ChangeNotifierProvider(create: (context) => AuthVm()),
   ChangeNotifierProvider(create: (context) => LoginPageVm(authVm: context.read<AuthVm>())),
   ChangeNotifierProvider(create: (context) => CreateAccountVm()),
   ChangeNotifierProvider(create: (context) => ShopVm()),
+  ChangeNotifierProvider(create: (context) => HomeVm()),
 ];
 
 Future<void> main() async {
