@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pokemu_basic_mobile/services/auth_service.dart';
-import 'package:pokemu_basic_mobile/services/token_storage_service.dart';
 
 import '../models/auth.dart';
 

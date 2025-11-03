@@ -56,7 +56,7 @@ class Shop extends StatelessWidget {
                           ), 
                           itemCount: shopVm.filteredPacks.length,
                           itemBuilder: (context, index) {
-                            return Container(
+                            return SizedBox(
                               height: 12, 
                               width: 12,
                               child: ShopPack(

@@ -7,7 +7,6 @@ import 'package:pokemu_basic_mobile/routes/named_routes.dart';
 import 'package:pokemu_basic_mobile/viewmodels/login_page_vm.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_button.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_textfield.dart';
-import 'package:pokemu_basic_mobile/views/pages/main_layout.dart';
 import 'package:provider/provider.dart';
 
 import '../components/pokemub_text.dart';

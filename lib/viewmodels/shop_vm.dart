@@ -67,7 +67,7 @@ class ShopVm extends ChangeNotifier {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     // create a new debounce of 300ms
-    _debounce = Timer(Duration(milliseconds: 300), () {
+    _debounce = Timer(const Duration(milliseconds: 300), () {
       // run this filter method ONLY when stop typing
       _filterPacks();
     });

@@ -3,7 +3,6 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_textfield.dart';
 
 import '../../common/constants/colors.dart';
-import '../components/pokemub_button.dart';
 import '../components/pokemub_text.dart';
 
 class MyVault extends StatelessWidget {

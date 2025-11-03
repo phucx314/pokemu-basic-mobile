@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math; // Import math cho sin/cos/pi
 
 class InteractiveTiltImage extends StatefulWidget {
   final String imageUrl;
@@ -80,7 +79,7 @@ class _InteractiveTiltImageState extends State<InteractiveTiltImage> with Single
               final effectiveOffset = _controller.isAnimating ? _tiltAnimation.value : _currentPanOffset;   
 
               // Tính toán góc xoay dựa trên độ lệch và góc tối đa
-              final double rotateX = effectiveOffset.dy * widget.maxTiltAngle; // Vuốt lên/xuống -> xoay quanh trục X
+              final double rotateX = effectiveOffset.dy * widget.maxTiltAngle * 2; // Vuốt lên/xuống -> xoay quanh trục X
               final double rotateY = -effectiveOffset.dx * widget.maxTiltAngle;   // Vuốt trái/phải -> xoay quanh trục Y
 
               return Transform(

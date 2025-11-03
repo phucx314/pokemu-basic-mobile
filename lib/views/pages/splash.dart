@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pokemu_basic_mobile/routes/named_routes.dart';
-import 'package:pokemu_basic_mobile/services/token_storage_service.dart';
 import 'package:pokemu_basic_mobile/viewmodels/auth_vm.dart';
-import 'package:pokemu_basic_mobile/views/pages/login_page.dart';
-import 'package:pokemu_basic_mobile/views/pages/main_layout.dart';
 import 'package:provider/provider.dart';
 
 import '../components/pokemub_loading.dart';
