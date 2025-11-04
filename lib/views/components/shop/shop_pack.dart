@@ -59,7 +59,7 @@ class ShopPack extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16,),
-        PokemubButton(label: 'Open', onTap: () {context.go('${NamedRoutes.packOpen}/$packId');}, height: 36,),
+        PokemubButton(label: 'Open', onTap: () {context.go('${NamedRoutes.packOpen}/$packId', extra: packName);}, height: 36,),
       ],
     );
   }

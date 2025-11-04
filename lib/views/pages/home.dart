@@ -89,7 +89,7 @@ class Home extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 16,),
-                                PokemubButton(label: 'Open', onTap: () {context.go('${NamedRoutes.packOpen}/${pack.id}');}, height: 36,),
+                                PokemubButton(label: 'Open', onTap: () {context.go('${NamedRoutes.packOpen}/${pack.id}', extra: pack.packName);}, height: 36,),
                               ],
                             ),
                           );
@@ -102,7 +102,7 @@ class Home extends StatelessWidget {
                       child: Divider(color: pokemubTextColor10, thickness: 2,),
                     ),
                     const SizedBox(height: 24,),
-                    const MomoSignatureText(text: 'Your rarest cards', fontSize: 24, color: pokemubTextColor, fontWeight: FontWeight.bold,),
+                    const MomoSignatureText(text: 'Your featured cards', fontSize: 24, color: pokemubTextColor, fontWeight: FontWeight.bold,),
                     const SizedBox(height: 16,),
                     SizedBox(
                       height: 200,

@@ -2,10 +2,12 @@ import 'package:go_router/go_router.dart';
 import 'package:pokemu_basic_mobile/routes/named_routes.dart';
 import 'package:pokemu_basic_mobile/viewmodels/auth_vm.dart';
 import 'package:pokemu_basic_mobile/views/pages/create_account.dart';
+import 'package:pokemu_basic_mobile/views/pages/gacha_result.dart';
 import 'package:pokemu_basic_mobile/views/pages/login_page.dart';
 import 'package:pokemu_basic_mobile/views/pages/main_layout.dart';
 import 'package:pokemu_basic_mobile/views/pages/splash.dart';
 
+import '../models/card.dart';
 import '../views/pages/pack_open.dart';
 
 class AppRouter {
@@ -26,7 +28,15 @@ class AppRouter {
       GoRoute(path: NamedRoutes.mainLayout, builder: (context, state) => const MainLayout(),),
       GoRoute(path: '${NamedRoutes.packOpen}/:packId', builder: (context, state) {
         final packId = int.parse(state.pathParameters['packId']!);
-        return PackOpen(packId: packId,);
+        final packName = state.extra as String;
+        return PackOpen(packId: packId, packName: packName,);
+      }),
+      GoRoute(path: NamedRoutes.gachaResult, builder: (context, state) {
+        final data = state.extra as Map<String, dynamic>;
+        final cards = data['cards'] as List<Card>;
+        final packId = data['packId'] as int;
+        final packName = data['packName'] as String;
+        return GachaResult(packId: packId, rolledCards: cards, packName: packName,);
       }),
     ],
     redirect: (context, state) {

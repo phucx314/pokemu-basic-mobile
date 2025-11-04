@@ -20,4 +20,9 @@ class MainLayoutVm extends ChangeNotifier {
     _currIndex = index;
     notifyListeners();
   }
+
+  // go to vault de trang gacha result nav toi
+  void goToVault() {
+    changeTab(0);
+  }
 }
