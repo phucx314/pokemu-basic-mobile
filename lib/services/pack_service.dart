@@ -11,7 +11,7 @@ class PackService {
   //// GET ALL AVAILABLE PACKS
   Future<ApiResponse<List<Pack>>> getAllAvailablePacks() async {
     try {
-      final res = await _dio.get('/pack/list');
+      final res = await _dio.get('/pack/list-available');
 
       final jsonBody = res.data;
 
