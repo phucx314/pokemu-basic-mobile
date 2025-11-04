@@ -6,7 +6,9 @@ import 'package:pokemu_basic_mobile/viewmodels/auth_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/create_account_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/login_page_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/main_layout_vm.dart';
+import 'package:pokemu_basic_mobile/viewmodels/open_pack_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/shop_vm.dart';
+import 'package:pokemu_basic_mobile/views/pages/pack_open.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -19,6 +21,7 @@ List<SingleChildWidget> buildProviders() => [
   ChangeNotifierProvider(create: (context) => CreateAccountVm()),
   ChangeNotifierProvider(create: (context) => ShopVm()),
   ChangeNotifierProvider(create: (context) => HomeVm()),
+  ChangeNotifierProvider(create: (context) => OpenPackVm()),
 ];
 
 Future<void> main() async {
@@ -45,4 +48,17 @@ class MainApp extends StatelessWidget {
       routerConfig: appRouter.router,
     );
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return MaterialApp(
+  //     title: 'PokEmu Basic',
+  //     theme: ThemeData(
+  //       fontFamily: 'Parkinsans',
+  //       colorScheme: ColorScheme.fromSeed(seedColor: pokemubPrimaryColor),
+  //     ),
+  //     debugShowCheckedModeBanner: false,
+  //     home: const PackOpen(packId: 2,),
+  //   );
+  // }
 }

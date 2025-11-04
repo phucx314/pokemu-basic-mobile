@@ -17,16 +17,17 @@ class AppRouter {
     refreshListenable: authVm,
     routes: [
       GoRoute(path: NamedRoutes.splash, builder: (context, state) => const Splash(),),
-      GoRoute(
-        path: NamedRoutes.login, 
-        builder: (context, state) { 
+      GoRoute(path: NamedRoutes.login, builder: (context, state) { 
           final username = state.uri.queryParameters['username'];
           return LoginPage(username: username);
         },
       ),
       GoRoute(path: NamedRoutes.register, builder: (context, state) => const CreateAccount(),),
       GoRoute(path: NamedRoutes.mainLayout, builder: (context, state) => const MainLayout(),),
-      GoRoute(path: NamedRoutes.packOpen, builder: (context, state) => const PackOpen(),),
+      GoRoute(path: '${NamedRoutes.packOpen}/:packId', builder: (context, state) {
+        final packId = int.parse(state.pathParameters['packId']!);
+        return PackOpen(packId: packId,);
+      }),
     ],
     redirect: (context, state) {
       final isAuthenticated = authVm.isAuthenticated;

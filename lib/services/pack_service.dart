@@ -3,6 +3,7 @@ import 'package:pokemu_basic_mobile/common/utils/dio_exceptions.dart';
 import 'package:pokemu_basic_mobile/models/pack.dart';
 import 'package:pokemu_basic_mobile/services/api_client.dart';
 
+import '../models/card.dart';
 import '../models/common/api_response.dart';
 
 class PackService {
@@ -40,6 +41,27 @@ class PackService {
         final listData = data as List<dynamic>;
         
         return listData.map((pack) => Pack.fromJson(pack as Map<String, dynamic>)).toList(); // 
+      });
+
+      return apiResponse;
+    } on DioException catch (e) {
+      return DioExceptions().handleDioError(e);
+    } catch (e) {
+      return DioExceptions().handleGenericError(e);
+    }
+  }
+
+  //// OPEN PACK
+  Future<ApiResponse<List<Card>>> openPack(int packId) async {
+    try {
+      final res = await _dio.post('/pack/$packId/open');
+
+      final jsonBody = res.data;
+
+      final apiResponse = ApiResponse<List<Card>>.fromJson(jsonBody, (data) {
+        final listData = data as List<dynamic>;
+
+        return listData.map((card) => Card.fromJson(card as Map<String, dynamic>)).toList();
       });
 
       return apiResponse;

@@ -1,7 +1,12 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TokenStorageService {
-  final _storage = const FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage(
+    webOptions: WebOptions(
+      dbName: 'FlutterEncryptedStorage',
+      publicKey: 'FlutterSecureStorage',
+    ),
+  );
 
   Future<void> saveTokens(String accessToken, String refreshToken) async {
     await _storage.write(key: 'accessToken', value: accessToken);
