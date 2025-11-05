@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pokemu_basic_mobile/viewmodels/open_pack_vm.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_button.dart';
@@ -10,6 +12,7 @@ import '../../common/constants/colors.dart';
 import '../../routes/named_routes.dart';
 import '../components/pokemub_loading.dart';
 import '../components/pokemub_text.dart';
+import '../../models/card.dart' as model;
 
 class PackOpen extends StatefulWidget {
   const PackOpen({super.key, required this.packId, required this.packName});
@@ -24,12 +27,47 @@ class PackOpen extends StatefulWidget {
 class _PackOpenState extends State<PackOpen> {
   final CardSwiperController _swiperController = CardSwiperController();
 
+  bool _isCachingImages = false;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<OpenPackVm>().fetchRolledCards(widget.packId);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _fetchAndPrecacheCards();
     });
+  }
+
+  Future<void> _fetchAndPrecacheCards() async {
+    final vm = context.read<OpenPackVm>();
+
+    bool success = await vm.fetchRolledCards(widget.packId);
+
+    if (success && mounted) {
+      setState(() {
+        _isCachingImages = true;
+      });
+
+      await _preCacheImages(vm.rolledCards);
+
+      if (mounted) {
+        setState(() {
+          _isCachingImages = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _preCacheImages(List<model.Card> cards) async {
+    if (!mounted) return; // check an toan
+
+    List<Future> futures = [];
+
+    for (var card in cards) {
+      futures.add(precacheImage(CachedNetworkImageProvider(card.cardImage), context));
+    }
+
+    await Future.wait(futures); // doi tat ca images tai xong
+    print('Cached ${cards.length} images');
   }
 
   @override
@@ -59,12 +97,21 @@ class _PackOpenState extends State<PackOpen> {
   }
 
   Widget _buildBody(BuildContext context, OpenPackVm vm) {
-    if (vm.isLoading) {
+    if (vm.isLoading || _isCachingImages) {
       return const Center(child: PokemubLoading());
     }
 
     if (vm.errorMessage != null) {
-      return Center(child: ParkinsansText(text: vm.errorMessage!, color: pokemubPrimaryColor));
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ParkinsansText(text: vm.errorMessage!, color: pokemubPrimaryColor),
+            const SizedBox(height: 16),
+            PokemubButton(label: 'Go back Home', onTap: () {context.go(NamedRoutes.mainLayout);}, height: 36, hasBorder: true, fillColor: pokemubBackgroundColor, labelColor: pokemubTextColor, ),
+          ],
+        ),
+      );
     }
 
     if (vm.rolledCards.isEmpty) {
@@ -88,7 +135,7 @@ class _PackOpenState extends State<PackOpen> {
           Expanded(
             child: Center(
               child: SizedBox(
-                height: 500,
+                height: MediaQuery.of(context).size.width * 0.75 * 1695/1214,
                 width: MediaQuery.of(context).size.width * 0.75,
                 child: CardSwiper(
                   padding: EdgeInsets.zero,
@@ -103,7 +150,14 @@ class _PackOpenState extends State<PackOpen> {
                       speed: 400,
                       side: CardSide.FRONT,
                       front: Image.asset('assets/images/CardbackPocket.webp'), 
-                      back: Image.network(card.cardImage),
+                      back: CachedNetworkImage(
+                        imageUrl: card.cardImage,
+                        fit: BoxFit.contain,
+                        placeholder: (context, url) => const Center(
+                          child: PokemubLoading(),
+                        ),
+                        errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
+                      ),
                     );
                   },
                   numberOfCardsDisplayed: 3,

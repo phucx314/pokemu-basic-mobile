@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +11,7 @@ import '../../common/constants/colors.dart';
 import '../../models/card.dart' as model;
 import '../../viewmodels/main_layout_vm.dart';
 import '../components/pokemub_button.dart';
+import '../components/pokemub_loading.dart';
 
 class GachaResult extends StatelessWidget {
   const GachaResult({super.key, required this.rolledCards, required this.packId, required this.packName});
@@ -50,11 +52,15 @@ class GachaResult extends StatelessWidget {
                         final card = rolledCards[index];
                     
                         return GestureDetector(
-                          child: Image.network(card.cardImage),
+                          child: CachedNetworkImage(
+                            imageUrl: card.cardImage,
+                            placeholder: (context, url) => const Center(child: PokemubLoading()),
+                            errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
+                          ),
                           onTap: () {
                             _zoomCard(context, card);
                           },
-                        ); // TODO: lấy ảnh từ cache thay vì cứ call network
+                        );
                       },
                     ),
                   ),
@@ -102,9 +108,14 @@ class GachaResult extends StatelessWidget {
                 child: AspectRatio(
                   aspectRatio: 1214/1695, // card ratio
                   child:InteractiveTiltImage(
-                    imageUrl: card.cardImage, boxFit: BoxFit.contain,
                     maxTiltAngle: 0.3, // angle
                     animationDuration: const Duration(milliseconds: 300),
+                    child: CachedNetworkImage(
+                      imageUrl: card.cardImage,
+                      fit: BoxFit.contain,
+                      placeholder: (context, url) => const Center(child: PokemubLoading()),
+                      errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
+                    ),
                   ),
                 ),
               ),

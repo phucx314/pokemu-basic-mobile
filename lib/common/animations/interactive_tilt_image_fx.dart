@@ -1,24 +1,15 @@
 import 'package:flutter/material.dart';
 
 class InteractiveTiltImage extends StatefulWidget {
-  final String imageUrl;
+  final Widget child;
   final double maxTiltAngle; // Góc nghiêng tối đa
   final Duration animationDuration; // Thời gian ảnh trở về vị trí cũ
 
-  final BoxFit boxFit;
-  final double imageHeight;
-  final double imageOpacity;
-  // final double? imageWidth;
-
   const InteractiveTiltImage({
     super.key,
-    required this.imageUrl,
+    required this.child,
     this.maxTiltAngle = 0.1, // Góc nghiêng tối đa theo radian (khoảng 5.7 độ)
     this.animationDuration = const Duration(milliseconds: 200), 
-    this.boxFit = BoxFit.cover, 
-    this.imageHeight = 100, 
-    this.imageOpacity = 1,
-    // this.imageWidth = 100,
   });
 
   @override
@@ -93,12 +84,7 @@ class _InteractiveTiltImageState extends State<InteractiveTiltImage> with Single
                 child: child,
               );
             },
-            child: Image.network(
-              widget.imageUrl,
-              fit: widget.boxFit,
-              height: widget.imageHeight,
-              opacity: AlwaysStoppedAnimation(widget.imageOpacity),
-            ),
+            child: widget.child,
           ),
         );
       },

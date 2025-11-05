@@ -11,7 +11,7 @@ class PokemubButton extends StatefulWidget {
     required this.label, 
     required this.onTap, 
     this.labelColor = pokemubBackgroundColor,
-    this.width = 120,
+    this.width,
     this.height = 60,
     this.hasBorder = false,
     this.borderColor = pokemubTextColor,
@@ -21,13 +21,14 @@ class PokemubButton extends StatefulWidget {
     this.iconSize = 24,
     this.labelSize = 16,
     this.isLoading = false,
+    this.isDisabled = false,
   });
 
-  final Color? fillColor;
+  final Color fillColor;
   final String label;
   final Color labelColor;
   final Function onTap;
-  final double width;
+  final double? width;
   final double height;
   final bool hasBorder;
   final Color borderColor;
@@ -37,6 +38,7 @@ class PokemubButton extends StatefulWidget {
   final bool isLoading;
   final double iconSize;
   final double labelSize;
+  final bool isDisabled;
 
   @override
   State<PokemubButton> createState() => _PokemubButtonState();
@@ -46,12 +48,12 @@ class _PokemubButtonState extends State<PokemubButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => widget.onTap(),
+      onTap: widget.isDisabled ? null : () => widget.onTap(),
       child: Container(
         height: widget.height,
-        width: widget.width,
+        width: widget.width ?? MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          color: widget.fillColor,
+          color: widget.isDisabled ? widget.fillColor!.withOpacity(0.5) : widget.fillColor,
           border: widget.hasBorder 
             ? Border.all(
               color: widget.borderColor,

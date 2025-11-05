@@ -19,9 +19,9 @@ class FloatingPack extends StatelessWidget {
         height: 400, // co chieu cao thi fx moi hoat dong dung dc
         width: 250,
         child: InteractiveTiltImage(
-          imageUrl: packImage, imageHeight: 400, boxFit: BoxFit.fitHeight, imageOpacity: isSoldOut ? 0.3 : 1,
           maxTiltAngle: 0.25, // angle
           animationDuration: const Duration(milliseconds: 300),
+          child: Image.network(packImage, height: 400, fit: BoxFit.fitHeight, opacity: AlwaysStoppedAnimation(isSoldOut ? 0.3 : 1),),
         ),
       ),
     );

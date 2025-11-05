@@ -75,21 +75,33 @@ class Home extends StatelessWidget {
                                     const SizedBox(width: 4,),
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                                      decoration: BoxDecoration(
+                                      decoration: BoxDecoration(                                        
                                         color: pack.globalQuantity.toString() != '0' ? pokemubTextColor10 : pokemubPrimaryColor.withOpacity(0.5),
                                       ),
                                       child: Row(
                                         children: [
                                           pack.globalQuantity == null 
                                             ? const ParkinsansText(text: 'Unlimited', fontSize: 12,)
-                                            : ParkinsansText(text: '${CurrencyFormatter.formatCoin(pack.globalQuantity!)} left', fontSize: 12,),
+                                            : pack.globalQuantity == 0 
+                                              ? const ParkinsansText(text: 'Sold out', fontSize: 12, color: pokemubBackgroundColor,)
+                                              : ParkinsansText(text: '${CurrencyFormatter.formatCoin(pack.globalQuantity!)} left', fontSize: 12,),
                                         ],
                                       ),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: 16,),
-                                PokemubButton(label: 'Open', onTap: () {context.go('${NamedRoutes.packOpen}/${pack.id}', extra: pack.packName);}, height: 36,),
+                                PokemubButton(
+                                  label: 'Open', 
+                                  onTap: () {
+                                    context.go(
+                                      '${NamedRoutes.packOpen}/${pack.id}', 
+                                      extra: pack.packName,
+                                    );
+                                  }, 
+                                  height: 36, 
+                                  isDisabled: pack.globalQuantity == 0,
+                                ),
                               ],
                             ),
                           );
