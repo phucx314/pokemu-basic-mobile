@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pokemu_basic_mobile/common/constants/colors.dart';
-import 'package:pokemu_basic_mobile/routes/named_routes.dart';
 import 'package:pokemu_basic_mobile/viewmodels/shop_vm.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_loading.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_text.dart';

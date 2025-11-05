@@ -8,7 +8,6 @@ import 'package:pokemu_basic_mobile/viewmodels/login_page_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/main_layout_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/open_pack_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/shop_vm.dart';
-import 'package:pokemu_basic_mobile/views/pages/pack_open.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 

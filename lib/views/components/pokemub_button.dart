@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pokemu_basic_mobile/common/constants/colors.dart';
 
 import 'pokemub_text.dart';
@@ -53,7 +52,7 @@ class _PokemubButtonState extends State<PokemubButton> {
         height: widget.height,
         width: widget.width ?? MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          color: widget.isDisabled ? widget.fillColor!.withOpacity(0.5) : widget.fillColor,
+          color: widget.isDisabled ? widget.fillColor.withOpacity(0.5) : widget.fillColor,
           border: widget.hasBorder 
             ? Border.all(
               color: widget.borderColor,
