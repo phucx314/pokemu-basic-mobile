@@ -49,29 +49,36 @@ class Shop extends StatelessWidget {
                       ? Center(child: ParkinsansText(text: shopVm.errorMessage!, color: pokemubPrimaryColor, fontSize: 16, maxLines: 10,),)
                       : shopVm.filteredPacks.isEmpty 
                         ? const Center(child: ParkinsansText(text: 'No packs found'),)
-                        : GridView.builder(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 24,
-                            crossAxisSpacing: 16,
-                            childAspectRatio: 0.43,
-                          ), 
-                          itemCount: shopVm.filteredPacks.length,
-                          itemBuilder: (context, index) {
-                            final pack = shopVm.filteredPacks[index];
-
-                            return SizedBox(
-                              height: 12, 
-                              width: 12,
-                              child: ShopPack(
-                                packId: pack.id,
-                                packImageUrl: pack.packImage,
-                                packName: pack.packName,
-                                stock: pack.globalQuantity ?? 99999999999999, 
-                                price: pack.price,
-                              ),
-                            );
+                        : RefreshIndicator(
+                          backgroundColor: pokemubBackgroundColor,
+                          color: pokemubPrimaryColor,
+                          onRefresh: () async {
+                            await context.read<ShopVm>().getAllAvailablePacks();
                           },
+                          child: GridView.builder(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 24,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 0.43,
+                            ), 
+                            itemCount: shopVm.filteredPacks.length,
+                            itemBuilder: (context, index) {
+                              final pack = shopVm.filteredPacks[index];
+                          
+                              return SizedBox(
+                                height: 12, 
+                                width: 12,
+                                child: ShopPack(
+                                  packId: pack.id,
+                                  packImageUrl: pack.packImage,
+                                  packName: pack.packName,
+                                  stock: pack.globalQuantity ?? 99999999999999, 
+                                  price: pack.price,
+                                ),
+                              );
+                            },
+                          ),
                         ),
                 ),
               ],
