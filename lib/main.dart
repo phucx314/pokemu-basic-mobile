@@ -15,22 +15,21 @@ import 'package:provider/single_child_widget.dart';
 import 'viewmodels/home_vm.dart';
 
 List<SingleChildWidget> buildProviders() => [
+  // independent VMs
   ChangeNotifierProvider(create: (context) => MainLayoutVm()),
   ChangeNotifierProvider(create: (context) => AuthVm()),
-  // ChangeNotifierProvider(create: (context) => LoginPageVm(authVm: context.read<AuthVm>())),
   ChangeNotifierProvider(create: (context) => CreateAccountVm()),
   ChangeNotifierProvider(create: (context) => ShopVm()),
   ChangeNotifierProvider(create: (context) => HomeVm()),
   ChangeNotifierProvider(create: (context) => OpenPackVm()),
 
+  // VMs that depends on another VM
   ChangeNotifierProxyProvider<AuthVm, LoginPageVm>(
-    // Nó sẽ tự động "lấy" AuthVm
     create: (context) => LoginPageVm(
-      authVm: context.read<AuthVm>(), // << Giờ context.read() mới chạy
+      authVm: context.read<AuthVm>(),
     ),
-    // (Optional) Update LoginPageVm khi AuthVm thay đổi
     update: (context, authVm, previousLoginPageVm) => LoginPageVm(
-      authVm: authVm, // << Truyền AuthVm đã được cập nhật
+      authVm: authVm,
     ),
   ),
 ];

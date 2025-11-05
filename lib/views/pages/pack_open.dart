@@ -67,7 +67,6 @@ class _PackOpenState extends State<PackOpen> {
     }
 
     await Future.wait(futures); // doi tat ca images tai xong
-    print('Cached ${cards.length} images');
   }
 
   @override
