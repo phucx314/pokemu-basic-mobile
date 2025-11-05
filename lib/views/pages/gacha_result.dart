@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pokemu_basic_mobile/routes/named_routes.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_text.dart';
 import 'package:provider/provider.dart';
 
+import '../../common/animations/interactive_tilt_image_fx.dart';
 import '../../common/constants/colors.dart';
 import '../../models/card.dart' as model;
 import '../../viewmodels/main_layout_vm.dart';
@@ -47,10 +49,16 @@ class GachaResult extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final card = rolledCards[index];
                     
-                        return Image.network(card.cardImage); // TODO: lấy ảnh từ cache thay vì cứ call network
+                        return GestureDetector(
+                          child: Image.network(card.cardImage),
+                          onTap: () {
+                            _zoomCard(context, card);
+                          },
+                        ); // TODO: lấy ảnh từ cache thay vì cứ call network
                       },
                     ),
                   ),
+                  Container(height: 16,),
                   PokemubButton(label: 'Open this pack again', onTap: () {context.go('${NamedRoutes.packOpen}/$packId', extra: packName);}, width: MediaQuery.of(context).size.width,),
                   const SizedBox(height: 16,),
                   PokemubButton(
@@ -75,6 +83,48 @@ class GachaResult extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _zoomCard(BuildContext context, model.Card card) {
+    showDialog(
+      context: context,
+      barrierColor: pokemubBackgroundColor.withOpacity(0.9),
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // hug content
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 1214/1695, // card ratio
+                  child:InteractiveTiltImage(
+                    imageUrl: card.cardImage, boxFit: BoxFit.contain,
+                    maxTiltAngle: 0.3, // angle
+                    animationDuration: const Duration(milliseconds: 300),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16,),
+              PokemubButton(
+                width: 60,
+                label: '', 
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                }, 
+                hasIcon: true, 
+                icon: TablerIcons.x, 
+                hasBorder: true,
+                fillColor: pokemubBackgroundColor,
+              ),
+              const SizedBox(height: 16,),
+            ],
+          ),
+        );
+      },
     );
   }
 }
