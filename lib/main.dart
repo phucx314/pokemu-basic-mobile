@@ -17,11 +17,22 @@ import 'viewmodels/home_vm.dart';
 List<SingleChildWidget> buildProviders() => [
   ChangeNotifierProvider(create: (context) => MainLayoutVm()),
   ChangeNotifierProvider(create: (context) => AuthVm()),
-  ChangeNotifierProvider(create: (context) => LoginPageVm(authVm: context.read<AuthVm>())),
+  // ChangeNotifierProvider(create: (context) => LoginPageVm(authVm: context.read<AuthVm>())),
   ChangeNotifierProvider(create: (context) => CreateAccountVm()),
   ChangeNotifierProvider(create: (context) => ShopVm()),
   ChangeNotifierProvider(create: (context) => HomeVm()),
   ChangeNotifierProvider(create: (context) => OpenPackVm()),
+
+  ChangeNotifierProxyProvider<AuthVm, LoginPageVm>(
+    // Nó sẽ tự động "lấy" AuthVm
+    create: (context) => LoginPageVm(
+      authVm: context.read<AuthVm>(), // << Giờ context.read() mới chạy
+    ),
+    // (Optional) Update LoginPageVm khi AuthVm thay đổi
+    update: (context, authVm, previousLoginPageVm) => LoginPageVm(
+      authVm: authVm, // << Truyền AuthVm đã được cập nhật
+    ),
+  ),
 ];
 
 Future<void> main() async {

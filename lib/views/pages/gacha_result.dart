@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pokemu_basic_mobile/routes/named_routes.dart';
+import 'package:pokemu_basic_mobile/viewmodels/auth_vm.dart';
+import 'package:pokemu_basic_mobile/viewmodels/home_vm.dart';
+import 'package:pokemu_basic_mobile/viewmodels/shop_vm.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_text.dart';
 import 'package:provider/provider.dart';
 
@@ -65,14 +68,31 @@ class GachaResult extends StatelessWidget {
                     ),
                   ),
                   Container(height: 16,),
-                  PokemubButton(label: 'Open this pack again', onTap: () {context.go('${NamedRoutes.packOpen}/$packId', extra: packName);}, width: MediaQuery.of(context).size.width,),
+                  PokemubButton(
+                    label: 'Open this pack again', 
+                    onTap: () {
+                      context.go('${NamedRoutes.packOpen}/$packId', extra: packName);
+                    }, 
+                    width: MediaQuery.of(context).size.width,
+                  ),
                   const SizedBox(height: 16,),
                   PokemubButton(
                     label: 'Go to Vault', 
-                    onTap: () {
+                    onTap: () async {
                       final mainLayoutVm = context.read<MainLayoutVm>();
+                      final authVm = context.read<AuthVm>();
+                      final shopVm = context.read<ShopVm>();
+                      final homeVm = context.read<HomeVm>();
 
                       mainLayoutVm.goToVault();
+
+                      await Future.wait([
+                        authVm.getMe(),
+                        homeVm.getFeaturedPacks(),
+                        shopVm.getAllAvailablePacks(),
+                      ]);
+
+                      if (!context.mounted) return; // check "mounted" (vi co await)
 
                       context.go(NamedRoutes.mainLayout);
                     }, 
