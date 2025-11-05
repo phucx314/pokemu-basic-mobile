@@ -100,6 +100,7 @@ class Home extends StatelessWidget {
                                     );
                                   }, 
                                   height: 36, 
+                                  width: 120,
                                   isDisabled: pack.globalQuantity == 0,
                                 ),
                               ],

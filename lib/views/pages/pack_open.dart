@@ -108,14 +108,23 @@ class _PackOpenState extends State<PackOpen> {
           children: [
             ParkinsansText(text: vm.errorMessage!, color: pokemubPrimaryColor),
             const SizedBox(height: 16),
-            PokemubButton(label: 'Go back Home', onTap: () {context.go(NamedRoutes.mainLayout);}, height: 36, hasBorder: true, fillColor: pokemubBackgroundColor, labelColor: pokemubTextColor, ),
+            PokemubButton(label: 'Go back', onTap: () {context.go(NamedRoutes.mainLayout);}, height: 36, width: 120, hasBorder: true, fillColor: pokemubBackgroundColor, labelColor: pokemubTextColor, ),
           ],
         ),
       );
     }
 
     if (vm.rolledCards.isEmpty) {
-      return const Center(child: ParkinsansText(text: 'No cards in pack'));
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ParkinsansText(text: 'No cards in pack'),
+            const SizedBox(height: 16),
+            PokemubButton(label: 'Go back', onTap: () {context.go(NamedRoutes.mainLayout);}, height: 36, width: 120, hasBorder: true, fillColor: pokemubBackgroundColor, labelColor: pokemubTextColor, ),
+          ],
+        ),
+      );
     }
 
     final cards = vm.rolledCards;
@@ -170,7 +179,7 @@ class _PackOpenState extends State<PackOpen> {
               ),
             ),
           ),
-          PokemubButton(label: 'Skip', onTap: () {context.go(NamedRoutes.gachaResult, extra: passToNextPageData);}, hasBorder: true, borderColor: pokemubTextColor, fillColor: pokemubBackgroundColor, labelColor: pokemubTextColor,),
+          PokemubButton(label: 'Skip', width: 150, onTap: () {context.go(NamedRoutes.gachaResult, extra: passToNextPageData);}, hasBorder: true, borderColor: pokemubTextColor, fillColor: pokemubBackgroundColor, labelColor: pokemubTextColor,),
           const SizedBox(height: 16,),
         ],
       ),
