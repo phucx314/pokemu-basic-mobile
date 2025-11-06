@@ -86,15 +86,15 @@ class GachaResult extends StatelessWidget {
 
                       mainLayoutVm.goToVault();
 
+                      context.go(NamedRoutes.mainLayout);
+
                       await Future.wait([
-                        authVm.getMe(),
+                        authVm.getMe(), // gây rebuild -> bị null TẠI TRANG NÀY trước khi chuyển trang -> lỗi
                         homeVm.getFeaturedPacks(),
                         shopVm.getAllAvailablePacks(),
                       ]);
 
-                      if (!context.mounted) return; // check "mounted" (vi co await)
-
-                      context.go(NamedRoutes.mainLayout);
+                      if (!context.mounted) return;
                     }, 
                     hasBorder: true, 
                     borderColor: pokemubTextColor, 
