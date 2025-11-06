@@ -84,16 +84,17 @@ class GachaResult extends StatelessWidget {
                       final shopVm = context.read<ShopVm>();
                       final homeVm = context.read<HomeVm>();
 
-                      mainLayoutVm.goToVault();
-
                       context.go(NamedRoutes.mainLayout);
 
                       await Future.wait([
-                        authVm.getMe(), // gây rebuild -> bị null TẠI TRANG NÀY trước khi chuyển trang -> lỗi
                         homeVm.getFeaturedPacks(),
                         shopVm.getAllAvailablePacks(),
                       ]);
 
+                      mainLayoutVm.goToVault();
+
+                      authVm.getMe();
+                      
                       if (!context.mounted) return;
                     }, 
                     hasBorder: true, 
@@ -121,14 +122,14 @@ class GachaResult extends StatelessWidget {
           backgroundColor: Colors.transparent,
           elevation: 0,
           child: Column(
-            mainAxisSize: MainAxisSize.min, // hug content
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: AspectRatio(
-                  aspectRatio: 1214/1695, // card ratio
+                  aspectRatio: 1214/1695,
                   child:InteractiveTiltImage(
-                    maxTiltAngle: 0.3, // angle
+                    maxTiltAngle: 0.3,
                     animationDuration: const Duration(milliseconds: 300),
                     child: CachedNetworkImage(
                       imageUrl: card.cardImage,
