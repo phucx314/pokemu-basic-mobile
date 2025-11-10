@@ -71,4 +71,25 @@ class PackService {
       return DioExceptions().handleGenericError(e);
     }
   }
+
+  //// GET PACK RARITY DROP RATES
+  Future<ApiResponse<List<DropRateResponse>>> getDropRates(int packId) async {
+    try {
+      final res = await _dio.get('/pack/$packId/get-drop-rates');
+
+      final jsonBody = res.data;
+
+      final apiResponse = ApiResponse<List<DropRateResponse>>.fromJson(jsonBody, (data) {
+        final listData = data as List<dynamic>;
+
+        return listData.map((dropRate) => DropRateResponse.fromJson(dropRate as Map<String, dynamic>)).toList();
+      });
+
+      return apiResponse;
+    } on DioException catch (e) {
+      return DioExceptions().handleDioError(e);
+    } catch (e) {
+      return DioExceptions().handleGenericError(e);
+    }
+  }
 }

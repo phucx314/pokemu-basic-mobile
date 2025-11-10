@@ -26,3 +26,17 @@ class Pack {
     );
   }
 }
+
+class DropRateResponse {
+  final String rarityName;
+  final double dropRate;
+
+  DropRateResponse({
+    required this.rarityName,
+    required this.dropRate,
+  });
+
+  factory DropRateResponse.fromJson(Map<String, dynamic> json) {
+    return DropRateResponse(rarityName: json['rarityName'], dropRate: json['dropRate']);
+  }
+}
