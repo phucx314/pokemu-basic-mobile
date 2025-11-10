@@ -4,11 +4,11 @@ import '../../../common/animations/floating_fx.dart';
 import '../../../common/animations/interactive_tilt_image_fx.dart';
 
 class FloatingPack extends StatelessWidget {
-  const FloatingPack({super.key, required this.id, required this.packImage, required this.isSoldOut});
+  const FloatingPack({super.key, required this.id, required this.isSoldOut, required this.child});
 
   final int id;
-  final String packImage;
   final bool isSoldOut;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class FloatingPack extends StatelessWidget {
         child: InteractiveTiltImage(
           maxTiltAngle: 0.25, // angle
           animationDuration: const Duration(milliseconds: 300),
-          child: Image.network(packImage, height: 400, fit: BoxFit.fitHeight, opacity: AlwaysStoppedAnimation(isSoldOut ? 0.3 : 1),),
+          child: child
         ),
       ),
     );

@@ -9,6 +9,7 @@ import 'package:pokemu_basic_mobile/views/components/pokemub_button.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/constants/colors.dart';
+import '../../common/utils/cache_manager_config.dart';
 import '../../routes/named_routes.dart';
 import '../components/pokemub_loading.dart';
 import '../components/pokemub_text.dart';
@@ -161,6 +162,7 @@ class _PackOpenState extends State<PackOpen> {
                       back: CachedNetworkImage(
                         imageUrl: card.cardImage,
                         fit: BoxFit.contain,
+                        cacheManager: cacheManagerConfig,
                         placeholder: (context, url) => const Center(
                           child: PokemubLoading(),
                         ),

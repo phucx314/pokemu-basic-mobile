@@ -1,10 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../common/constants/colors.dart';
+import '../../../common/utils/cache_manager_config.dart';
 import '../../../common/utils/currency_formatter.dart';
 import '../../../routes/named_routes.dart';
 import '../pokemub_button.dart';
+import '../pokemub_loading.dart';
 import '../pokemub_text.dart';
 
 class ShopPack extends StatelessWidget {
@@ -20,11 +25,30 @@ class ShopPack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cache = cacheManagerConfig; // singleton instance
+
+    Future<void> debugCache(String url) async {
+      final fileInfo = await cache.getFileFromCache(url);
+      if (fileInfo != null) {
+        debugPrint('✅ Disk cache exists for: $url -> ${fileInfo.file.path}');
+      } else {
+        debugPrint('❌ No disk cache for: $url');
+      }
+    }
+
     return Column(
       children: [
         isLoading == true
           ? Image.asset('assets/images/loading_pack.png', fit: BoxFit.fitWidth,)
-          : Image.network(packImageUrl, fit: BoxFit.fitWidth,),
+          : CachedNetworkImage(
+            imageUrl: packImageUrl, 
+            fit: BoxFit.fitWidth, 
+            cacheManager: cacheManagerConfig,
+            placeholder: (context, url) => const Center(
+              child: PokemubLoading(),
+            ),
+            errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
+          ),
         const SizedBox(height: 8,),
         ParkinsansText(text: packName, color: pokemubTextColor, fontWeight: FontWeight.bold, fontSize: 16, textOverflow: TextOverflow.ellipsis, maxLines: 1,),
         const SizedBox(height: 4,),

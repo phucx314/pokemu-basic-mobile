@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 
 import '../../common/animations/interactive_tilt_image_fx.dart';
 import '../../common/constants/colors.dart';
+import '../../common/utils/cache_manager_config.dart';
 import '../../models/card.dart' as model;
 import '../../viewmodels/main_layout_vm.dart';
 import '../components/pokemub_button.dart';
@@ -58,6 +59,7 @@ class GachaResult extends StatelessWidget {
                           child: CachedNetworkImage(
                             imageUrl: card.cardImage,
                             placeholder: (context, url) => const Center(child: PokemubLoading()),
+                            cacheManager: cacheManagerConfig,
                             errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
                           ),
                           onTap: () {
@@ -134,6 +136,7 @@ class GachaResult extends StatelessWidget {
                     child: CachedNetworkImage(
                       imageUrl: card.cardImage,
                       fit: BoxFit.contain,
+                      cacheManager: cacheManagerConfig,
                       placeholder: (context, url) => const Center(child: PokemubLoading()),
                       errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
                     ),
