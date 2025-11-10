@@ -25,17 +25,6 @@ class ShopPack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cache = cacheManagerConfig; // singleton instance
-
-    Future<void> debugCache(String url) async {
-      final fileInfo = await cache.getFileFromCache(url);
-      if (fileInfo != null) {
-        debugPrint('✅ Disk cache exists for: $url -> ${fileInfo.file.path}');
-      } else {
-        debugPrint('❌ No disk cache for: $url');
-      }
-    }
-
     return Column(
       children: [
         isLoading == true
