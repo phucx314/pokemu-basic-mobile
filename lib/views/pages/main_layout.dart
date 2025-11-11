@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pokemu_basic_mobile/routes/named_routes.dart';
 import 'package:pokemu_basic_mobile/viewmodels/main_layout_vm.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_button.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +30,16 @@ class MainLayout extends StatelessWidget {
           children: [
             Row(
               children: [
-                Image.network(authVm.currUser?.avatar ?? '', fit: BoxFit.cover, height: 24,),
+                GestureDetector(
+                  onTap: () {
+                    _onAvatarTapMenu(context);
+                  },
+                  child: Image.network(
+                    authVm.currUser?.avatar ?? '', 
+                    fit: BoxFit.cover, 
+                    height: 24,
+                  ),
+                ),
                 const SizedBox(width: 8,),
                 ParkinsansText(text: '@${authVm.currUser?.username ?? 'FAIL_TO_LOAD'}', color: pokemubTextColor, fontSize: 16, fontWeight: FontWeight.bold),
               ],
@@ -112,6 +123,77 @@ class MainLayout extends StatelessWidget {
               label: 'Shop'
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _onAvatarTapMenu(BuildContext avatarContext) {
+    showModalBottomSheet(
+      context: avatarContext, 
+      builder: (context) {
+        return Container(
+          color: pokemubBackgroundColor,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 16,),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: MomoSignatureText(text: 'Menu', color: pokemubTextColor, fontWeight: FontWeight.bold, fontSize: 24,),
+              ),
+              const SizedBox(height: 16,),
+              PokemubMenuItem(icon: TablerIcons.user_hexagon, label: 'My profile', onTap: () {},),
+              PokemubMenuItem(icon: TablerIcons.logout_2, label: 'Log out', onTap: () => _logout(context), labelAndIconColor: pokemubPrimaryColor,),
+              const SizedBox(height: 16,),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _logout(BuildContext context) async {
+    final vm = context.read<AuthVm>();
+
+    await vm.logout();
+
+    if (context.mounted) {
+      if (Navigator.of(context).canPop()) {
+        Navigator.pop(context);
+      }
+      
+      context.go(NamedRoutes.login);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const ParkinsansText(text: 'Logged out'), backgroundColor: pokemubTextColor10,));
+    }
+  }
+}
+
+class PokemubMenuItem extends StatelessWidget {
+  const PokemubMenuItem({super.key, this.icon = TablerIcons.a_b, this.label = 'Menu item', required this.onTap, this.isDisabled = false, this.labelAndIconColor = pokemubTextColor});
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool isDisabled;
+  final Color labelAndIconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: isDisabled ? null : onTap,
+      child: Container(
+        color: pokemubBackgroundColor,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Row(
+            children: [
+              Icon(icon, color: labelAndIconColor,),
+              const SizedBox(width: 16,),
+              ParkinsansText(text: label, color: labelAndIconColor,),
+            ],
+          ),
         ),
       ),
     );

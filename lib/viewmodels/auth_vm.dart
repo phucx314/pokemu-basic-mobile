@@ -49,4 +49,10 @@ class AuthVm extends ChangeNotifier {
 
     return false;
   }
+
+  Future<void> logout() async {
+    await _authService.logout();
+    _currUser = null;
+    notifyListeners();
+  }
 }

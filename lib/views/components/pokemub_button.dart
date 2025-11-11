@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokemu_basic_mobile/common/constants/colors.dart';
 
+import 'pokemub_loading.dart';
 import 'pokemub_text.dart';
 
 class PokemubButton extends StatefulWidget {
@@ -64,7 +65,7 @@ class _PokemubButtonState extends State<PokemubButton> {
             ),
         ),
         child: Center(
-          child: widget.isLoading ? Center(child: CircularProgressIndicator(color: widget.labelColor),) : Row(
+          child: widget.isLoading ? const Center(child: PokemubLoading(size: 25,),) : Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               widget.hasIcon ? Icon(widget.icon, size: widget.iconSize,) : const SizedBox(),

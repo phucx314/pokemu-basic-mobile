@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:pokemu_basic_mobile/services/auth_service.dart';
 import 'package:pokemu_basic_mobile/views/pages/shop.dart';
 
 import '../views/pages/home.dart';
 import '../views/pages/my_vault.dart';
 
 class MainLayoutVm extends ChangeNotifier {
+  final AuthService _authService = AuthService();
+
   int _currIndex = 1; // vi home o giua 
   int get currIndex => _currIndex;
 
