@@ -9,16 +9,22 @@ class ShopVm extends ChangeNotifier {
   final PackService _packService = PackService();
   
   bool _isLoading = true;
+  bool _isDropRatesLoading = false;
   String? _errorMessage;
+  String? _drErrorMessage;
   List<Pack> _allAvailablePacks = [];
   List<Pack> _filteredPacks = []; // list of searching packs
+  List<DropRateResponse> _dropRates = [];
 
   final TextEditingController searchController = TextEditingController();
   Timer? _debounce;
 
   bool get isLoading => _isLoading;
+  bool get isDropRatesLoading => _isDropRatesLoading;
   String? get errorMessage => _errorMessage;
+  String? get drErrorMessage => _drErrorMessage;
   List<Pack> get filteredPacks => _filteredPacks;
+  List<DropRateResponse> get dropRates => _dropRates;
 
   ShopVm() {
     searchController.addListener(_onSearchChanged);
@@ -35,16 +41,25 @@ class ShopVm extends ChangeNotifier {
 
   void _setState({
     bool? loading,
+    bool? dropRatesLoading,
     String? errorMessage,
+    String? dropRatesErrorMessage,
     List<Pack>? allAvailablePack,
+    List<DropRateResponse>? dropRates,
   }) {
     _isLoading = loading ?? _isLoading;
+    _isDropRatesLoading = dropRatesLoading ?? _isDropRatesLoading;
     _errorMessage = errorMessage;
+    _drErrorMessage = dropRatesErrorMessage;
 
     if (allAvailablePack != null) {
       _allAvailablePacks = allAvailablePack;
       // when new data fetched, reset filtered list
       _filterPacks();
+    }
+
+    if (dropRates != null) {
+      _dropRates = dropRates;
     }
     notifyListeners();
   }
@@ -85,5 +100,17 @@ class ShopVm extends ChangeNotifier {
       }).toList();
     }
     notifyListeners();
+  }
+
+  Future<void> getDropRates(int packId) async {
+    _setState(dropRatesLoading: true, dropRatesErrorMessage: null);
+
+    final res = await _packService.getDropRates(packId);
+
+    if (res.statusCode == 200 && res.data != null) {
+      _setState(dropRatesLoading: false, dropRates: res.data);
+    } else {
+      _setState(dropRatesLoading: false, dropRatesErrorMessage: res.message ?? 'Failed to fetch drop rates');
+    }
   }
 }
