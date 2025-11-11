@@ -12,12 +12,15 @@ class OpenPackVm extends ChangeNotifier {
   List<model.Card> _rolledCards = [];
   bool _isCachingImages = true;
   int? _currCardElementTypeId;
+  int? _currRarityId;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   List<model.Card> get rolledCards => _rolledCards;
   bool get isCachingImages => _isCachingImages;
   int? get currCardElementTypeId => _currCardElementTypeId;
+  int? get currRarityId => _currRarityId;
+  
 
   void _setState({
     bool? loading,
@@ -25,7 +28,9 @@ class OpenPackVm extends ChangeNotifier {
     List<model.Card>? cards,
     bool? isCaching,
     int? elementType,
-    bool updateElementType = false // cờ này để fix lỗi hệ null
+    int? rarity,
+    bool updateElementType = false, // cờ này để fix lỗi hệ null
+    bool updateRarity = false, // cờ này để fix lỗi hệ null
   }) {
     _isLoading = loading ?? _isLoading;
     _errorMessage = message;
@@ -40,6 +45,10 @@ class OpenPackVm extends ChangeNotifier {
       _currCardElementTypeId = elementType; 
     }
 
+    if (updateRarity) { // chỉ update state này khi BẬT CỜ
+      _currRarityId = rarity;
+    }
+
     notifyListeners();
   }
 
@@ -49,7 +58,7 @@ class OpenPackVm extends ChangeNotifier {
     final res = await _packService.openPack(packId);
     
     if (res.statusCode == 201 && res.data != null) {
-      _setState(loading: false, cards: res.data, elementType: (res.data!.isNotEmpty && res.data![0].elementTypeId != null) ? res.data![0].elementTypeId : null, updateElementType: true); // bật cờ
+      _setState(loading: false, cards: res.data, rarity: res.data!.isNotEmpty ? res.data![0].rarityId : null, updateRarity: true); // bật cờ
       if (context.mounted) {
         await _preCacheImages(res.data!, context);
       }
@@ -74,7 +83,7 @@ class OpenPackVm extends ChangeNotifier {
 
   void onCardSwiped(int? newIndex) {
     if (newIndex != null && newIndex < _rolledCards.length) {
-      _setState(elementType: _rolledCards[newIndex].elementTypeId, updateElementType: true); // bật cờ khi swipe (cho phép update hệ)
+      _setState(rarity: _rolledCards[newIndex].rarityId, updateRarity: true); // bật cờ khi swipe (cho phép update hệ)
     } 
   }
 }

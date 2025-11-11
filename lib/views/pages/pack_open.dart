@@ -39,6 +39,16 @@ final Map<dynamic, String> rarityMapToPng = {
   6: 'legendary.png',
 };
 
+final Map<dynamic, String> rarityMapToText = {
+  null: '', // null
+  1: 'Common',
+  2: 'Uncommon',
+  3: 'Rare',
+  4: 'Very_rare',
+  5: 'Ultra_rare',
+  6: 'Legendary',
+};
+
 class PackOpen extends StatefulWidget {
   const PackOpen({super.key, required this.packId, required this.packName});
 
@@ -163,9 +173,17 @@ class _PackOpenState extends State<PackOpen> {
                           ),
                           Positioned(
                             top: -50-16,
-                            child: SizedBox(
-                              height: 50,
-                              child: vm.currCardElementTypeId == null ? Image.asset('assets/images/default_avatar.png') : Image.asset('assets/images/${elementTypeMapToPng[vm.currCardElementTypeId]}'),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  height: 50,
+                                  child: vm.currRarityId == null 
+                                    ? Image.asset('assets/images/default_avatar.png') 
+                                    : Image.asset('assets/images/${rarityMapToPng[vm.currRarityId]}'),
+                                ),
+                                const SizedBox(width: 16,),
+                                ParkinsansText(text: rarityMapToText[vm.currRarityId] ?? '', fontSize: 24, fontWeight: FontWeight.bold),
+                              ],
                             ),
                           ),
                         ],
