@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
 import 'package:pokemu_basic_mobile/viewmodels/open_pack_vm.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_button.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +13,7 @@ import '../../common/utils/cache_manager_config.dart';
 import '../../routes/named_routes.dart';
 import '../components/pokemub_loading.dart';
 import '../components/pokemub_text.dart';
+import '../../models/card.dart' as model;
 
 final Map<dynamic, String> elementTypeMapToPng = {
   null: 'default_avatar.png', // null
@@ -109,7 +109,15 @@ class _PackOpenState extends State<PackOpen> {
 
   Widget _buildBody(BuildContext context, OpenPackVm vm) {
     if (vm.isLoading || vm.isCachingImages) {
-      return const Center(child: PokemubLoading());
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            const Expanded(child: Center(child: PokemubLoading())),
+            PokemubButton(label: vm.isOpenedFromBack ? 'Open from front' : 'Open from back', onTap: () {vm.toggleBackCardOpen();}, hasBorder: true, fillColor: pokemubBackgroundColor, labelColor: pokemubTextColor),
+          ],
+        ),
+      );
     }
 
     if (vm.errorMessage != null) {
@@ -132,7 +140,7 @@ class _PackOpenState extends State<PackOpen> {
           children: [
             const ParkinsansText(text: 'No cards in pack'),
             const SizedBox(height: 16),
-            PokemubButton(label: 'Go back', onTap: () {context.go(NamedRoutes.mainLayout);}, height: 36, width: 120, hasBorder: true, fillColor: pokemubBackgroundColor, labelColor: pokemubTextColor, ),
+            PokemubButton(label: 'Go back', onTap: () {context.go(NamedRoutes.mainLayout);}, height: 36, width: 120, hasBorder: true, fillColor: pokemubBackgroundColor, labelColor: pokemubTextColor,),
           ],
         ),
       );
@@ -154,65 +162,50 @@ class _PackOpenState extends State<PackOpen> {
         children: [
           Expanded(
             child: Center(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.width * 0.75 * 1695/1214,
-                width: MediaQuery.of(context).size.width * 0.75,
-                child: CardSwiper(
-                  padding: EdgeInsets.zero,
-                  isLoop: false,
-                  controller: _swiperController,
-                  cardsCount: cards.length,
-                  cardBuilder: (context, index, horizontalOffsetPercentage, verticalOffsetPercentage) {
-                    final card = cards[index];
-                
-                    return FlipCard(
-                      key: ValueKey(card.id),
-                      speed: 400,
-                      side: CardSide.FRONT,
-                      front: Image.asset('assets/images/CardbackPocket.webp'), 
-                      back: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          CachedNetworkImage(
-                            imageUrl: card.cardImage,
-                            fit: BoxFit.contain,
-                            cacheManager: cacheManagerConfig,
-                            placeholder: (context, url) => const Center(
-                              child: PokemubLoading(),
-                            ),
-                            errorWidget: (context, url, error) => Column(
-                              children: [
-                                const Icon(TablerIcons.error_404),
-                                ParkinsansText(text: card.cardName),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            top: -75-16,
-                            right: 0, left: 0,
-                            child: SizedBox(
-                              height: 75,
-                              child: vm.currRarityId == null 
-                                ? Image.asset('assets/images/default_avatar.png') 
-                                : Image.asset('assets/images/${rarityMapToLottie[vm.currRarityId]}'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  onSwipe: (previousIndex, currentIndex, direction) {
-                    vm.onCardSwiped(currentIndex);
-              
-                    return true;
-                  },
-                  numberOfCardsDisplayed: 3,
-                  backCardOffset: const Offset(0, 30),
-                  scale: 0.9,
-                  onEnd: () {
-                    context.go(NamedRoutes.gachaResult, extra: passToNextPageData);
-                  },
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: 75,
+                    child: vm.currRarityId == null 
+                      ? Image.asset('assets/images/default_avatar.png') 
+                      : Image.asset('assets/images/${rarityMapToLottie[vm.currRarityId]}'),
+                  ),
+                  const SizedBox(height: 16,),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.width * 0.75 * 1695/1214,
+                    width: MediaQuery.of(context).size.width * 0.75,
+                    child: CardSwiper(
+                      padding: EdgeInsets.zero,
+                      isLoop: false,
+                      controller: _swiperController,
+                      cardsCount: cards.length,
+                      cardBuilder: (context, index, horizontalOffsetPercentage, verticalOffsetPercentage) {
+                        final card = cards[index];
+                    
+                        return FlipCard(
+                          key: ValueKey(card.id),
+                          speed: 400,
+                          side: CardSide.FRONT,
+                          back: vm.isOpenedFromBack ? _buildFrontCard(context, card) : _buildBackCard(), 
+                          front: vm.isOpenedFromBack ? _buildBackCard() : _buildFrontCard(context, card),
+                        );
+                      },
+                      onSwipe: (previousIndex, currentIndex, direction) {
+                        vm.onCardSwiped(currentIndex);
+                  
+                        return true;
+                      },
+                      numberOfCardsDisplayed: 3,
+                      backCardOffset: const Offset(0, 30),
+                      scale: 0.9,
+                      onEnd: () {
+                        context.go(NamedRoutes.gachaResult, extra: passToNextPageData);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 75+16),
+                ],
               ),
             ),
           ),
@@ -221,5 +214,31 @@ class _PackOpenState extends State<PackOpen> {
         ],
       ),
     );
+  }
+
+  Widget _buildFrontCard(BuildContext context, model.Card card) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        CachedNetworkImage(
+          imageUrl: card.cardImage,
+          fit: BoxFit.contain,
+          cacheManager: cacheManagerConfig,
+          placeholder: (context, url) => const Center(
+            child: PokemubLoading(),
+          ),
+          errorWidget: (context, url, error) => Column(
+            children: [
+              const Icon(TablerIcons.error_404),
+              ParkinsansText(text: card.cardName),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBackCard() {
+    return Image.asset('assets/images/CardbackPocket.webp');
   }
 }

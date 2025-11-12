@@ -13,6 +13,7 @@ class OpenPackVm extends ChangeNotifier {
   bool _isCachingImages = true;
   int? _currCardElementTypeId;
   int? _currRarityId;
+  bool _isOpenedFromBack = false;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -20,7 +21,7 @@ class OpenPackVm extends ChangeNotifier {
   bool get isCachingImages => _isCachingImages;
   int? get currCardElementTypeId => _currCardElementTypeId;
   int? get currRarityId => _currRarityId;
-  
+  bool get isOpenedFromBack => _isOpenedFromBack;
 
   void _setState({
     bool? loading,
@@ -31,6 +32,7 @@ class OpenPackVm extends ChangeNotifier {
     int? rarity,
     bool updateElementType = false, // cờ này để fix lỗi hệ null
     bool updateRarity = false, // cờ này để fix lỗi hệ null
+    bool? isBack,
   }) {
     _isLoading = loading ?? _isLoading;
     _errorMessage = message;
@@ -49,6 +51,7 @@ class OpenPackVm extends ChangeNotifier {
       _currRarityId = rarity;
     }
 
+    _isOpenedFromBack = isBack ?? _isOpenedFromBack;
     notifyListeners();
   }
 
@@ -85,5 +88,9 @@ class OpenPackVm extends ChangeNotifier {
     if (newIndex != null && newIndex < _rolledCards.length) {
       _setState(rarity: _rolledCards[newIndex].rarityId, updateRarity: true); // bật cờ khi swipe (cho phép update hệ)
     } 
+  }
+
+  void toggleBackCardOpen() {
+    _isOpenedFromBack ? _setState(isBack: false) : _setState(isBack: true);
   }
 }
