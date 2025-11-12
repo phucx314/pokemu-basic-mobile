@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:pokemu_basic_mobile/viewmodels/open_pack_vm.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_button.dart';
 import 'package:provider/provider.dart';
@@ -39,13 +40,23 @@ final Map<dynamic, String> rarityMapToPng = {
   6: 'legendary.png',
 };
 
+final Map<dynamic, String> rarityMapToLottie = {
+  null: 'default_avatar.png', // null
+  1: 'common.gif',
+  2: 'uncommon.gif',
+  3: 'rare.gif',
+  4: 'very_rare.gif',
+  5: 'epic.gif',
+  6: 'legendary.gif',
+};
+
 final Map<dynamic, String> rarityMapToText = {
   null: '', // null
   1: 'Common',
   2: 'Uncommon',
   3: 'Rare',
-  4: 'Very_rare',
-  5: 'Ultra_rare',
+  4: 'Very rare',
+  5: 'Epic',
   6: 'Legendary',
 };
 
@@ -169,21 +180,21 @@ class _PackOpenState extends State<PackOpen> {
                             placeholder: (context, url) => const Center(
                               child: PokemubLoading(),
                             ),
-                            errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
+                            errorWidget: (context, url, error) => Column(
+                              children: [
+                                const Icon(TablerIcons.error_404),
+                                ParkinsansText(text: card.cardName),
+                              ],
+                            ),
                           ),
                           Positioned(
-                            top: -50-16,
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  height: 50,
-                                  child: vm.currRarityId == null 
-                                    ? Image.asset('assets/images/default_avatar.png') 
-                                    : Image.asset('assets/images/${rarityMapToPng[vm.currRarityId]}'),
-                                ),
-                                const SizedBox(width: 16,),
-                                ParkinsansText(text: rarityMapToText[vm.currRarityId] ?? '', fontSize: 24, fontWeight: FontWeight.bold),
-                              ],
+                            top: -75-16,
+                            right: 0, left: 0,
+                            child: SizedBox(
+                              height: 75,
+                              child: vm.currRarityId == null 
+                                ? Image.asset('assets/images/default_avatar.png') 
+                                : Image.asset('assets/images/${rarityMapToLottie[vm.currRarityId]}'),
                             ),
                           ),
                         ],
@@ -196,7 +207,7 @@ class _PackOpenState extends State<PackOpen> {
                     return true;
                   },
                   numberOfCardsDisplayed: 3,
-                  backCardOffset: const Offset(0, 20),
+                  backCardOffset: const Offset(0, 30),
                   scale: 0.9,
                   onEnd: () {
                     context.go(NamedRoutes.gachaResult, extra: passToNextPageData);

@@ -60,7 +60,12 @@ class GachaResult extends StatelessWidget {
                             imageUrl: card.cardImage,
                             placeholder: (context, url) => const Center(child: PokemubLoading()),
                             cacheManager: cacheManagerConfig,
-                            errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
+                            errorWidget: (context, url, error) => Column(
+                              children: [
+                                const Icon(TablerIcons.error_404),
+                                ParkinsansText(text: card.cardName),
+                              ],
+                            ),
                           ),
                           onTap: () {
                             _zoomCard(context, card);
@@ -138,7 +143,12 @@ class GachaResult extends StatelessWidget {
                       fit: BoxFit.contain,
                       cacheManager: cacheManagerConfig,
                       placeholder: (context, url) => const Center(child: PokemubLoading()),
-                      errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
+                      errorWidget: (context, url, error) => Column(
+                        children: [
+                          const Icon(TablerIcons.error_404),
+                          ParkinsansText(text: card.cardName),
+                        ],
+                      ),
                     ),
                   ),
                 ),
