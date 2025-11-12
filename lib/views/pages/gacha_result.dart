@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pokemu_basic_mobile/common/animations/rare_glow_border_fx.dart';
 import 'package:pokemu_basic_mobile/routes/named_routes.dart';
 import 'package:pokemu_basic_mobile/viewmodels/auth_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/home_vm.dart';
@@ -56,15 +57,21 @@ class GachaResult extends StatelessWidget {
                         final card = rolledCards[index];
                     
                         return GestureDetector(
-                          child: CachedNetworkImage(
-                            imageUrl: card.cardImage,
-                            placeholder: (context, url) => const Center(child: PokemubLoading()),
-                            cacheManager: cacheManagerConfig,
-                            errorWidget: (context, url, error) => Column(
-                              children: [
-                                const Icon(TablerIcons.error_404),
-                                ParkinsansText(text: card.cardName),
-                              ],
+                          child: RarityGlowBorder(
+                            rarityId: card.rarityId,
+                            cardHeight: (MediaQuery.of(context).size.width - 16*2 - 8*2)/3 * 1695/1214,
+                            cardWidth: (MediaQuery.of(context).size.width - 16*2 - 8*2)/3, // width card = width màn - 2 cái padding 16 - 2 cái spacing 8 / 3 cards 1 hàng
+                            borderRadius: 5,
+                            child: CachedNetworkImage(
+                              imageUrl: card.cardImage,
+                              placeholder: (context, url) => const Center(child: PokemubLoading()),
+                              cacheManager: cacheManagerConfig,
+                              errorWidget: (context, url, error) => Column(
+                                children: [
+                                  const Icon(TablerIcons.error_404),
+                                  ParkinsansText(text: card.cardName),
+                                ],
+                              ),
                             ),
                           ),
                           onTap: () {

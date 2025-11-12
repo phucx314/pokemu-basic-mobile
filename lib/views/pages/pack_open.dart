@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pokemu_basic_mobile/common/animations/rare_glow_border_fx.dart';
 import 'package:pokemu_basic_mobile/viewmodels/open_pack_vm.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_button.dart';
 import 'package:provider/provider.dart';
@@ -183,12 +184,18 @@ class _PackOpenState extends State<PackOpen> {
                       cardBuilder: (context, index, horizontalOffsetPercentage, verticalOffsetPercentage) {
                         final card = cards[index];
                     
-                        return FlipCard(
+                        return RarityGlowBorder(
                           key: ValueKey(card.id),
-                          speed: 400,
-                          side: CardSide.FRONT,
-                          back: vm.isOpenedFromBack ? _buildFrontCard(context, card) : _buildBackCard(), 
-                          front: vm.isOpenedFromBack ? _buildBackCard() : _buildFrontCard(context, card),
+                          rarityId: card.rarityId,
+                          cardHeight: MediaQuery.of(context).size.width * 0.75 * 1695/1214,
+                          cardWidth: MediaQuery.of(context).size.width * 0.75,
+                          borderRadius: 12,
+                          child: FlipCard(
+                            speed: 400,
+                            side: CardSide.FRONT,
+                            back: vm.isOpenedFromBack ? _buildFrontCard(context, card) : _buildBackCard(), 
+                            front: vm.isOpenedFromBack ? _buildBackCard() : _buildFrontCard(context, card),
+                          ),
                         );
                       },
                       onSwipe: (previousIndex, currentIndex, direction) {
