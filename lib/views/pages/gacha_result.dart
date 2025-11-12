@@ -11,6 +11,7 @@ import 'package:pokemu_basic_mobile/views/components/pokemub_text.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/animations/interactive_tilt_image_fx.dart';
+import '../../common/animations/parallax_holo_fx.dart';
 import '../../common/constants/colors.dart';
 import '../../common/utils/cache_manager_config.dart';
 import '../../models/card.dart' as model;
@@ -142,7 +143,8 @@ class GachaResult extends StatelessWidget {
               Expanded(
                 child: AspectRatio(
                   aspectRatio: 1214/1695,
-                  child:InteractiveTiltImage(
+                  child: InteractiveTiltImage(
+                    raraityId: card.rarityId,
                     maxTiltAngle: 0.3,
                     animationDuration: const Duration(milliseconds: 300),
                     child: CachedNetworkImage(
