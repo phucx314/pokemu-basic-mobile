@@ -136,27 +136,31 @@ class GachaResult extends StatelessWidget {
         return Dialog(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
-                child: AspectRatio(
-                  aspectRatio: 1214/1695,
-                  child: InteractiveTiltImage(
-                    raraityId: card.rarityId,
-                    maxTiltAngle: 0.3,
-                    animationDuration: const Duration(milliseconds: 300),
-                    child: CachedNetworkImage(
-                      imageUrl: card.cardImage,
-                      fit: BoxFit.contain,
-                      cacheManager: cacheManagerConfig,
-                      placeholder: (context, url) => const Center(child: PokemubLoading()),
-                      errorWidget: (context, url, error) => Column(
-                        children: [
-                          const Icon(TablerIcons.error_404),
-                          ParkinsansText(text: card.cardName),
-                        ],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: AspectRatio(
+                    aspectRatio: 1214/1695,
+                    child: InteractiveTiltImage(
+                      raraityId: card.rarityId,
+                      maxTiltAngle: 0.3,
+                      animationDuration: const Duration(milliseconds: 300),
+                      child: CachedNetworkImage(
+                        imageUrl: card.cardImage,
+                        fit: BoxFit.contain,
+                        cacheManager: cacheManagerConfig,
+                        placeholder: (context, url) => const Center(child: PokemubLoading()),
+                        errorWidget: (context, url, error) => Column(
+                          children: [
+                            const Icon(TablerIcons.error_404),
+                            ParkinsansText(text: card.cardName),
+                          ],
+                        ),
                       ),
                     ),
                   ),

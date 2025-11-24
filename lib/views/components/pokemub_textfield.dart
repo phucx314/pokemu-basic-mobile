@@ -33,8 +33,8 @@ class PokemubTextfield extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ParkinsansText(text: label, color: pokemubTextColor, fontWeight: FontWeight.bold, fontSize: 14),
-        const SizedBox(height: 4,),
+        label == '' ? const SizedBox() : ParkinsansText(text: label, color: pokemubTextColor, fontWeight: FontWeight.bold, fontSize: 14),
+        label == '' ? const SizedBox() : const SizedBox(height: 4,),
         Container(
           height: 60,
           decoration: BoxDecoration(

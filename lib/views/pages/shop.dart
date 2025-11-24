@@ -34,6 +34,7 @@ class Shop extends StatelessWidget {
               children: [
                 const SizedBox(height: 24,),
                 const MomoSignatureText(text: 'Shop', color: pokemubTextColor, fontSize: 24, fontWeight: FontWeight.bold,),
+                const SizedBox(height: 16,),
                 PokemubTextfield(
                   label: '', 
                   hintText: 'Search pack name', 
@@ -150,9 +151,10 @@ class Shop extends StatelessWidget {
         return Dialog(
           elevation: 0,
           backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
             height: 300,
-            width: 0.75 * MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
               color: pokemubBackgroundColor,

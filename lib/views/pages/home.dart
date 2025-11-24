@@ -210,9 +210,10 @@ class Home extends StatelessWidget {
         return Dialog(
           elevation: 0,
           backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
             height: 300,
-            width: 0.75 * MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
               color: pokemubBackgroundColor,
