@@ -5,10 +5,11 @@ import 'package:pokemu_basic_mobile/services/expansion_service.dart';
 
 import '../models/card.dart';
 import '../models/expansion.dart';
+import '../services/card_service.dart';
 
 class MyVaultVm extends ChangeNotifier {
   final ExpansionService _expansionService = ExpansionService();
-  // final CardService _cardService = CardService();
+  final CardService _cardService = CardService();
 
   bool _isLoading = true;
   bool _isExpansionListLoading = false;
@@ -17,16 +18,16 @@ class MyVaultVm extends ChangeNotifier {
   String? _expansionListErrorMessage;
   String? _cardListErrorMessage;
   List<ExpansionOptions> _expansionList = [];
-  List<CardInListResponse> _cardList = [];
+  List<CardInList> _cardList = [];
+  int? _totalCardsInExpansion;
   ExpansionOptions? _selectedExpansion;
 
   final TextEditingController cardSearchController = TextEditingController();
   final TextEditingController expansionSearchController = TextEditingController();
   Timer? _expansionSearchDebounce;
 
-  ExpansionOptionsQueryParams _currentExpansionQueryParams = ExpansionOptionsQueryParams(
-    searchKey: '', // Ban đầu rỗng
-  );
+  ExpansionOptionsQueryParams _currentExpansionQueryParams = ExpansionOptionsQueryParams(searchKey: '');
+  OwnedCardsQueryParams _currentOwnedCardQueryParams = OwnedCardsQueryParams(searchKey: '', expansionId: null);
 
   bool get isLoading => _isLoading;
   bool get isExpansionListLoading => _isExpansionListLoading;
@@ -35,12 +36,17 @@ class MyVaultVm extends ChangeNotifier {
   String? get expansionListErrorMessage => _expansionListErrorMessage;
   String? get cardListErrorMessage => _cardListErrorMessage;
   List<ExpansionOptions> get expansionList => _expansionList;
-  List<CardInListResponse> get cardList => _cardList;
+  List<CardInList> get cardList => _cardList;
+  int? get totalCardsInExpansion => _totalCardsInExpansion;
   ExpansionOptions? get selectedExpansion => _selectedExpansion;
 
   MyVaultVm() {
     expansionSearchController.addListener(_onExpansionSearchChanged);
-    getLatestExpansion();
+    getLatestExpansion().then((_) {
+      if (selectedExpansion != null) {
+        getOwnedCards(selectedExpansion!.id);
+      }
+    });
   }
 
   @override
@@ -59,7 +65,8 @@ class MyVaultVm extends ChangeNotifier {
     String? expansionListErrorMessage,
     String? cardListErrorMessage,
     List<ExpansionOptions>? expansionList,
-    List<CardInListResponse>? cardList,
+    List<CardInList>? cardList,
+    int? totalCardsInExpansion,
     ExpansionOptions? selectedExpansion,
   }) {
       _isLoading = isLoading ?? _isLoading;
@@ -72,9 +79,35 @@ class MyVaultVm extends ChangeNotifier {
       if (expansionList != null) _expansionList = expansionList;
       if (cardList != null) _cardList = cardList;
 
-      _selectedExpansion = selectedExpansion;
+      if (cardList != null) {
+        _cardList = cardList;
+      }
+
+      _totalCardsInExpansion = totalCardsInExpansion ?? _totalCardsInExpansion;
+
+      // Nếu selectedExpansion là null (không truyền) thì giữ nguyên giá trị cũ (_selectedExpansion)
+      _selectedExpansion = selectedExpansion ?? _selectedExpansion;
 
       notifyListeners();
+  }
+
+  //// GET OWNED CARDS BY EXPANSION ID
+  Future<void> getOwnedCards(int expansionId) async {
+    _setState(isCardListLoading: true, cardListErrorMessage: null);
+
+    final queryParams = _currentOwnedCardQueryParams.copyWith(expansionId: expansionId);
+
+    final res = await _cardService.getOwnedCards(queryParams);
+
+    if (res.data != null && res.statusCode == 200) {
+      _setState(
+        isCardListLoading: false,
+        totalCardsInExpansion: res.data!.totalCards,
+        cardList: res.data!.cards,
+      );
+    } else {
+      _setState(isCardListLoading: false, cardListErrorMessage: res.message ?? 'Failed to fetch owned cards');
+    }
   }
 
   //// GET EXPANSION LIST
@@ -121,8 +154,9 @@ class MyVaultVm extends ChangeNotifier {
 
   void selectExpansion(ExpansionOptions expansion) { // sau này nên đổi qua model đầy đủ hơn
     if (selectedExpansion != null && selectedExpansion?.id == expansion.id) {
-      _setState(selectedExpansion: null);
-      // _selectedExpansion = null;
+      // _setState(selectedExpansion: null);
+      _selectedExpansion = null;
+      notifyListeners();
       return;
     }
     _setState(selectedExpansion: expansion);

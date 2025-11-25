@@ -1,12 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:pokemu_basic_mobile/common/utils/cache_manager_config.dart';
+import 'package:pokemu_basic_mobile/models/card.dart' as model;
 import 'package:pokemu_basic_mobile/viewmodels/my_vault_vm.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_textfield.dart';
 import 'package:provider/provider.dart';
 
+import '../../common/animations/interactive_tilt_image_fx.dart';
 import '../../common/constants/colors.dart';
 import '../components/pokemub_button.dart';
+import '../components/pokemub_loading.dart';
 import '../components/pokemub_text.dart';
 
 class MyVault extends StatelessWidget {
@@ -33,8 +37,9 @@ class MyVault extends StatelessWidget {
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         _openExpansionList(context);
+                        await myVaultVm.getExpansionList();
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -44,7 +49,10 @@ class MyVault extends StatelessWidget {
                           color: pokemubBackgroundColor,
                           border: Border.all(color: pokemubTextColor, width: 2),
                         ),
-                        child: CachedNetworkImage(imageUrl: myVaultVm.selectedExpansion?.expansionImage ?? ''),
+                        child: CachedNetworkImage(
+                          imageUrl: myVaultVm.selectedExpansion?.expansionImage 
+                            ?? 'https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/expansions/NOT%20SELECTED.png'
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16,),
@@ -62,6 +70,7 @@ class MyVault extends StatelessWidget {
                 ),
                 const SizedBox(height: 16,),
                 Expanded(
+                  // TODO: INFINITY SCROLL
                   child: GridView.builder(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 5,
@@ -69,10 +78,32 @@ class MyVault extends StatelessWidget {
                       crossAxisSpacing: 8,
                       childAspectRatio: 1214/1695,
                     ), 
-                    itemCount: 100,
+                    itemCount: myVaultVm.totalCardsInExpansion,
                     itemBuilder: (context, index) {
-                      String formattedIndex = (index + 1).toString().padLeft(5, '0');
-                      return Container(
+                      int currExpansionIndex = index + 1;
+
+                      String formattedIndex = (index + 1).toString().padLeft(3, '0');
+
+                      final ownedCard = myVaultVm.cardList
+                        .cast<model.CardInList?>()
+                        .firstWhere(
+                          (card) => card?.expansionIndex == currExpansionIndex,
+                          orElse: () => null,
+                        );
+
+                      return (ownedCard != null) 
+                        ? GestureDetector(
+                          onTap: () {
+                            _zoomCard(context, ownedCard);
+                          },
+                          child: CachedNetworkImage(
+                            imageUrl: ownedCard.cardImage,
+                            cacheManager: cacheManagerConfig,
+                            placeholder: (context, url) => const Center(child: PokemubLoading()),
+                            errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
+                          ),
+                        )
+                        : Container(
                         height: 12, 
                         width: 12, 
                         decoration: BoxDecoration(
@@ -86,6 +117,7 @@ class MyVault extends StatelessWidget {
                     },
                   ),
                 ),
+                const SizedBox(height: 16,),
               ],
             ),
           )
@@ -210,7 +242,11 @@ class MyVault extends StatelessWidget {
                         label: 'Confirm', 
                         onTap: () {
                           vm.resetSearchTextfields();
-                          // TODO: set current selected expansion
+
+                          if (vm.selectedExpansion != null) {
+                            vm.getOwnedCards(vm.selectedExpansion!.id);
+                          }
+
                           Navigator.pop(dialogContext);
                         }, 
                         height: 36,
@@ -220,6 +256,63 @@ class MyVault extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _zoomCard(BuildContext context, model.CardInList card) {
+    showDialog(
+      context: context,
+      barrierColor: pokemubBackgroundColor.withOpacity(0.9),
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: AspectRatio(
+                    aspectRatio: 1214/1695,
+                    child: InteractiveTiltImage(
+                      maxTiltAngle: 0.3,
+                      animationDuration: const Duration(milliseconds: 300),
+                      child: CachedNetworkImage(
+                        imageUrl: card.cardImage,
+                        fit: BoxFit.contain,
+                        cacheManager: cacheManagerConfig,
+                        placeholder: (context, url) => const Center(child: PokemubLoading()),
+                        errorWidget: (context, url, error) => Column(
+                          children: [
+                            const Icon(TablerIcons.error_404),
+                            ParkinsansText(text: card.cardName),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16,),
+              PokemubButton(
+                width: 60,
+                label: '', 
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                }, 
+                hasIcon: true, 
+                icon: TablerIcons.x, 
+                hasBorder: true,
+                fillColor: pokemubBackgroundColor,
+              ),
+              const SizedBox(height: 16,),
+            ],
           ),
         );
       },
