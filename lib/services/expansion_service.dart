@@ -31,4 +31,21 @@ class ExpansionService {
       return DioExceptions().handleGenericError(e);
     }
   }
+
+  //// GET LATEST EXPANSION
+  Future<ApiResponse<ExpansionOptions>> getLatestExpansion() async {
+    try {
+      final res = await _dio.get('/expansion/latest');
+
+      final jsonBody = res.data;
+
+      final apiResponse = ApiResponse<ExpansionOptions>.fromJson(jsonBody, (data) => ExpansionOptions.fromJson(data));
+
+      return apiResponse;
+    } on DioException catch (e) {
+      return DioExceptions().handleDioError(e);
+    } catch (e) {
+      return DioExceptions().handleGenericError(e);
+    }
+  }
 }

@@ -40,7 +40,7 @@ class MyVaultVm extends ChangeNotifier {
 
   MyVaultVm() {
     expansionSearchController.addListener(_onExpansionSearchChanged);
-    getExpansionList();
+    getLatestExpansion();
   }
 
   @override
@@ -126,5 +126,18 @@ class MyVaultVm extends ChangeNotifier {
       return;
     }
     _setState(selectedExpansion: expansion);
+  }
+
+  //// GET LATEST EXPANSION
+  Future<void> getLatestExpansion() async {
+    _setState(isLoading: true, errorMessage: null);
+
+    final res = await _expansionService.getLatestExpansion();
+
+    if (res.data != null && res.statusCode == 200) {
+      _setState(isLoading: false, selectedExpansion: res.data);
+    } else {
+      _setState(isLoading: false, errorMessage: res.message ?? 'Failed to get latest expansion');
+    }
   }
 }
