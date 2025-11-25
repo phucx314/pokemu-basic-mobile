@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:pokemu_basic_mobile/viewmodels/my_vault_vm.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_textfield.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/constants/colors.dart';
 import '../components/pokemub_button.dart';
@@ -11,6 +14,8 @@ class MyVault extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final myVaultVm = context.watch<MyVaultVm>();
+
     return SafeArea(
       child: Stack(
         clipBehavior: Clip.none,
@@ -39,11 +44,20 @@ class MyVault extends StatelessWidget {
                           color: pokemubBackgroundColor,
                           border: Border.all(color: pokemubTextColor, width: 2),
                         ),
-                        child: Image.network('https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/expansions/b1-megarising.webp', fit: BoxFit.fitWidth,),
+                        child: CachedNetworkImage(imageUrl: myVaultVm.selectedExpansion?.expansionImage ?? ''),
                       ),
                     ),
                     const SizedBox(width: 16,),
-                    Expanded(child: PokemubTextfield(label: '', hintText: 'Search card name', width: MediaQuery.of(context).size.width, hasActionButton: true, actionButtonIcon: TablerIcons.search,)),
+                    Expanded(
+                      child: PokemubTextfield(
+                        label: '', 
+                        hintText: 'Search card name', 
+                        width: MediaQuery.of(context).size.width, 
+                        hasActionButton: true, 
+                        actionButtonIcon: TablerIcons.search,
+                        controller: myVaultVm.cardSearchController,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16,),
@@ -84,6 +98,8 @@ class MyVault extends StatelessWidget {
     showDialog(
       context: context, 
       builder: (dialogContext) {
+        final vm = dialogContext.watch<MyVaultVm>();
+
         return Dialog(
           elevation: 0,
           backgroundColor: Colors.transparent,
@@ -98,30 +114,76 @@ class MyVault extends StatelessWidget {
             ),
             child: Column(
               children: [
-                PokemubTextfield(label: '', hintText: 'Search expansions', width: MediaQuery.of(context).size.width, hasActionButton: true, actionButtonIcon: TablerIcons.search,),
+                PokemubTextfield(
+                  controller: vm.expansionSearchController, 
+                  label: '', 
+                  hintText: 'Search expansions', 
+                  width: MediaQuery.of(context).size.width, 
+                  hasActionButton: true, 
+                  actionButtonIcon: TablerIcons.search,
+                ),
                 const SizedBox(height: 16,),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: 25,
+                    itemCount: vm.expansionList.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        height: 60,
-                        width: MediaQuery.of(dialogContext).size.width,
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  width: 75,
-                                  height: 58,
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                                  child: Image.network('https://pub-b4691ef8f7464ccbb84fb1e456fb214a.r2.dev/expansions/b1-megarising.webp', fit: BoxFit.fitWidth),
-                                ),
-                                const ParkinsansText(text: 'Expansion Name', fontWeight: FontWeight.bold,),
-                              ],
-                            ),
-                            Container(height: 2, color: pokemubTextColor10,),
-                          ],
+                      final expansion = vm.expansionList[index];
+                      bool isChosen = (vm.selectedExpansion?.id == expansion.id);
+
+                      return GestureDetector(
+                        onTap: () {
+                          vm.selectExpansion(expansion);
+                        },
+                        child: Container(
+                          height: 60,
+                          width: MediaQuery.of(dialogContext).size.width,
+                          color: isChosen 
+                            ? pokemubPrimaryColor 
+                            : pokemubBackgroundColor,
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 75,
+                                    height: 58,
+                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    child: CachedNetworkImage(imageUrl: expansion.expansionImage, fit: BoxFit.fitWidth),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        ParkinsansText(
+                                          text: '[${expansion.expansionCode}]',
+                                          fontSize: 12,
+                                          textOverflow: TextOverflow.ellipsis,
+                                          color: isChosen 
+                                            ? pokemubBackgroundColor 
+                                            : pokemubTextColor,
+                                        ),
+                                        ParkinsansText(
+                                          text: expansion.expansionName, 
+                                          fontWeight: FontWeight.bold,
+                                          textOverflow: TextOverflow.ellipsis,
+                                          color: isChosen 
+                                            ? pokemubBackgroundColor 
+                                            : pokemubTextColor,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  isChosen 
+                                    ? const Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 8),
+                                      child: Icon(TablerIcons.check, color: pokemubBackgroundColor,),
+                                    ) 
+                                    : const SizedBox(),
+                                ],
+                              ),
+                              Container(height: 2, color: pokemubTextColor10,),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -147,7 +209,9 @@ class MyVault extends StatelessWidget {
                       child: PokemubButton(
                         label: 'Confirm', 
                         onTap: () {
-                          
+                          vm.resetSearchTextfields();
+                          // TODO: set current selected expansion
+                          Navigator.pop(dialogContext);
                         }, 
                         height: 36,
                       ),

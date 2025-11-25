@@ -40,8 +40,7 @@ class Shop extends StatelessWidget {
                   hintText: 'Search pack name', 
                   width: MediaQuery.of(context).size.width, 
                   hasActionButton: true, 
-                  actionButtonIcon: 
-                  TablerIcons.search,
+                  actionButtonIcon: TablerIcons.search,
                   controller: shopVm.searchController,
                 ),
                 const SizedBox(height: 16,),

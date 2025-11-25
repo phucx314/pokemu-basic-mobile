@@ -1,14 +1,14 @@
 class QueryRequest {
-  final int currentPage;
-  final int pageSize;   
-  final String sortBy;
-  final String direction;
+  final int? currentPage;
+  final int? pageSize;   
+  final String? sortBy;
+  final String? direction;
 
   QueryRequest({
-    required this.currentPage,
-    required this.pageSize,
-    required this.sortBy,
-    required this.direction,
+    this.currentPage,
+    this.pageSize,
+    this.sortBy,
+    this.direction,
   });
 
   factory QueryRequest.fromJson(Map<String, dynamic> json) {
@@ -16,11 +16,14 @@ class QueryRequest {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'currentPage': currentPage,
-      'pageSize': pageSize,
-      'sortBy': sortBy,
-      'direction': direction,
-    };
+    final Map<String, dynamic> data = {}; // defalut ko gửi req params j
+
+    // chỉ gửi những j khác null
+    if (currentPage != null) data['currentPage'] = currentPage;
+    if (pageSize != null) data['pageSize'] = pageSize;
+    if (sortBy != null) data['sortBy'] = sortBy;
+    if (direction != null) data['direction'] = direction;
+
+    return data;
   }
 }
