@@ -107,17 +107,11 @@ class MyVaultVm extends ChangeNotifier {
 
   //// GET OWNED CARDS BY EXPANSION ID
   Future<void> getOwnedCards(int expansionId, {bool isLoadMore = false}) async {
-    print('⚡ getOwnedCards called. isLoadMore: $isLoadMore');
-    print('   - Status: Loading: $_isLoading | LoadingMore: $_isLoadingMore');
-    print('   - Pagination: Page $_currentPage / $_totalPages');
-
     if (_isCardListLoading || _isLoadingMore) {
-      print('⛔ Blocked: Already loading');
       return; // nếu đang load dở thì nghỉ
     }
 
     if (isLoadMore && _currentPage >= _totalPages) {
-      print('⛔ Blocked: Reached end of pages');
       _currentLastOwnedCard = _totalCardsInExpansion;
       notifyListeners();
       return; // hoặc đã hết trang cũng nghỉ
@@ -146,14 +140,12 @@ class MyVaultVm extends ChangeNotifier {
         notifyListeners();
       }
 
-      _totalCardsInExpansion = res.data!.totalCards;
-      print('_totalCardsInExpansion: $_totalCardsInExpansion, _totalPages: $_totalPages (${res.paginationMetadata!.totalPages}, _currentPage: $_currentPage (${res.paginationMetadata!.currentPage}))');
+      if (res.data!.acquiredCards > 0) {
+        _currentLastOwnedCard = res.data!.cards.last.expansionIndex;
+      } else {
+        _currentLastOwnedCard = _totalCardsInExpansion;
+      }
 
-      _currentLastOwnedCard = res.data!.cards.last.expansionIndex;
-
-      // LOGIC QUAN TRỌNG:
-      // Nếu là Load More -> Nối list cũ + list mới
-      // Nếu là Load đầu -> Lấy list mới
       final newCards = res.data!.cards;
 
       if (isLoadMore) {
@@ -165,14 +157,22 @@ class MyVaultVm extends ChangeNotifier {
           isCardListLoading: false, 
           cardList: newCards, 
           totalCardsInExpansion: res.data!.totalCards,
-          currentLastOwnedCard: res.data!.cards.last.expansionIndex,
         );
+
+        if (res.data!.acquiredCards > 0) {
+          _setState(
+            currentLastOwnedCard: res.data!.cards.last.expansionIndex,
+          );
+        } else {
+          _setState(
+            currentLastOwnedCard: _totalCardsInExpansion,
+          );
+        }
       }
     } else {
-      // Xử lý lỗi...
       if (isLoadMore) {
         _isLoadingMore = false; 
-        _currentPage--; // Back lại page cũ nếu lỗi
+        _currentPage--;
         notifyListeners();
       } else {
         _setState(isCardListLoading: false, cardListErrorMessage: res.message);
