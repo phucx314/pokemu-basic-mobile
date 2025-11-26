@@ -118,6 +118,8 @@ class MyVaultVm extends ChangeNotifier {
 
     if (isLoadMore && _currentPage >= _totalPages) {
       print('⛔ Blocked: Reached end of pages');
+      _currentLastOwnedCard = _totalCardsInExpansion;
+      notifyListeners();
       return; // hoặc đã hết trang cũng nghỉ
     }
 

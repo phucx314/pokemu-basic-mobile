@@ -26,24 +26,20 @@ class _MyVaultState extends State<MyVault> {
   @override
   void initState() {
     super.initState();
-    // 2. Lắng nghe sự kiện cuộn
     _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
-    // 3. Nhớ dispose để tránh leak memory
     _scrollController.dispose();
     super.dispose();
   }
 
   void _onScroll() {
-    // Nếu cuộn đến gần cuối (còn cách đáy 200px)
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
       final vm = context.read<MyVaultVm>();
-      // Gọi hàm load more (nhớ check null selectedExpansion)
+      
       if (vm.selectedExpansion != null) {
-        print('🚀 Trigger Load More! Page: ${vm.currentPage} / ${vm.totalPages}');
         vm.getOwnedCards(vm.selectedExpansion!.id, isLoadMore: true);
       }
     }
