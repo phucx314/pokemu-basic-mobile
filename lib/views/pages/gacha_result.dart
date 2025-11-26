@@ -167,16 +167,19 @@ class GachaResult extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16,),
-              PokemubButton(
-                width: 60,
-                label: '', 
-                onTap: () {
-                  Navigator.pop(dialogContext);
-                }, 
-                hasIcon: true, 
-                icon: TablerIcons.x, 
-                hasBorder: true,
-                fillColor: pokemubBackgroundColor,
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: PokemubButton(
+                  width: 60,
+                  label: '', 
+                  onTap: () {
+                    Navigator.pop(dialogContext);
+                  }, 
+                  hasIcon: true, 
+                  icon: TablerIcons.x, 
+                  hasBorder: true,
+                  fillColor: pokemubBackgroundColor,
+                ),
               ),
               const SizedBox(height: 16,),
             ],

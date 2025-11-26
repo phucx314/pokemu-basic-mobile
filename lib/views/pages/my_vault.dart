@@ -13,8 +13,41 @@ import '../components/pokemub_button.dart';
 import '../components/pokemub_loading.dart';
 import '../components/pokemub_text.dart';
 
-class MyVault extends StatelessWidget {
+class MyVault extends StatefulWidget {
   const MyVault({super.key});
+
+  @override
+  State<MyVault> createState() => _MyVaultState();
+}
+
+class _MyVaultState extends State<MyVault> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // 2. Lắng nghe sự kiện cuộn
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    // 3. Nhớ dispose để tránh leak memory
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    // Nếu cuộn đến gần cuối (còn cách đáy 200px)
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+      final vm = context.read<MyVaultVm>();
+      // Gọi hàm load more (nhớ check null selectedExpansion)
+      if (vm.selectedExpansion != null) {
+        print('🚀 Trigger Load More! Page: ${vm.currentPage} / ${vm.totalPages}');
+        vm.getOwnedCards(vm.selectedExpansion!.id, isLoadMore: true);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,15 +103,15 @@ class MyVault extends StatelessWidget {
                 ),
                 const SizedBox(height: 16,),
                 Expanded(
-                  // TODO: INFINITY SCROLL
                   child: GridView.builder(
+                    controller: _scrollController,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 5,
                       mainAxisSpacing: 8,
                       crossAxisSpacing: 8,
                       childAspectRatio: 1214/1695,
                     ), 
-                    itemCount: myVaultVm.totalCardsInExpansion,
+                    itemCount: myVaultVm.currentLastOwnedCard,
                     itemBuilder: (context, index) {
                       int currExpansionIndex = index + 1;
 
@@ -300,16 +333,19 @@ class MyVault extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16,),
-              PokemubButton(
-                width: 60,
-                label: '', 
-                onTap: () {
-                  Navigator.pop(dialogContext);
-                }, 
-                hasIcon: true, 
-                icon: TablerIcons.x, 
-                hasBorder: true,
-                fillColor: pokemubBackgroundColor,
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: PokemubButton(
+                  width: 60,
+                  label: '', 
+                  onTap: () {
+                    Navigator.pop(dialogContext);
+                  }, 
+                  hasIcon: true, 
+                  icon: TablerIcons.x, 
+                  hasBorder: true,
+                  fillColor: pokemubBackgroundColor,
+                ),
               ),
               const SizedBox(height: 16,),
             ],

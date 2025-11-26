@@ -58,7 +58,11 @@ class _PokemubTextfieldState extends State<PokemubTextfield> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Padding(
-              padding: widget.hasActionButton ? const EdgeInsets.only(left: 16, right: 10) : const EdgeInsets.symmetric(horizontal: 16),
+              padding: widget.hasActionButton
+                ? const EdgeInsets.only(left: 16, right: 10) 
+                : widget.controller != null && widget.controller!.text.isNotEmpty
+                  ? const EdgeInsets.only(left: 16) 
+                  : const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Expanded(
@@ -93,6 +97,7 @@ class _PokemubTextfieldState extends State<PokemubTextfield> {
                         }
                       )
                     : const SizedBox(),
+                  const SizedBox(width: 8,),
                   widget.hasActionButton 
                     ? PokemubButton(
                       label: '', 
@@ -101,7 +106,8 @@ class _PokemubTextfieldState extends State<PokemubTextfield> {
                       height: 40, 
                       hasIcon: true, 
                       icon: widget.actionButtonIcon, 
-                      fillColor: pokemubTextColor10,) 
+                      fillColor: pokemubTextColor10,
+                    ) 
                     : const SizedBox(),
                 ],
               ),

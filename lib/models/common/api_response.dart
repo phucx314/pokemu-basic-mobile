@@ -5,14 +5,14 @@ class ApiResponse<T> {
   final String? message;
   final T? data;
   final Map<String, List<String>>? errors;
-  final PaginationMetadata? pagination;
+  final PaginationMetadata? paginationMetadata;
 
   ApiResponse({
     required this.statusCode,
     required this.message,
     required this.data,
     this.errors,
-    this.pagination,
+    this.paginationMetadata,
   });
 
   factory ApiResponse.fromJson(Map<String, dynamic> json, Function(dynamic) fromJsonT) {
@@ -29,8 +29,8 @@ class ApiResponse<T> {
       message: json['message'] ?? 'An unknown server error occurred',
       data: json['data'] != null ? fromJsonT(json['data']) : null,
       errors: parseErrors,
-      pagination: json['pagination'] != null
-          ? PaginationMetadata.fromJson(json['pagination'])
+      paginationMetadata: json['paginationMetadata'] != null
+          ? PaginationMetadata.fromJson(json['paginationMetadata'])
           : null,
     );
   }

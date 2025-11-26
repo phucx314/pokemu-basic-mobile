@@ -21,9 +21,14 @@ class MyVaultVm extends ChangeNotifier {
   List<CardInList> _cardList = [];
   int? _totalCardsInExpansion;
   ExpansionOptions? _selectedExpansion;
+  int _currentPage = 1;
+  int _totalPages = 1;
+  bool _isLoadingMore = false;
+  int? _currentLastOwnedCard;
 
   final TextEditingController cardSearchController = TextEditingController();
   final TextEditingController expansionSearchController = TextEditingController();
+  // final ScrollController scrollController = ScrollController();
   Timer? _expansionSearchDebounce;
 
   ExpansionOptionsQueryParams _currentExpansionQueryParams = ExpansionOptionsQueryParams(searchKey: '');
@@ -39,6 +44,10 @@ class MyVaultVm extends ChangeNotifier {
   List<CardInList> get cardList => _cardList;
   int? get totalCardsInExpansion => _totalCardsInExpansion;
   ExpansionOptions? get selectedExpansion => _selectedExpansion;
+  bool get isLoadingMore => _isLoadingMore;
+  int? get currentLastOwnedCard => _currentLastOwnedCard;
+  int? get currentPage => _currentPage;
+  int? get totalPages => _totalPages;
 
   MyVaultVm() {
     expansionSearchController.addListener(_onExpansionSearchChanged);
@@ -47,12 +56,14 @@ class MyVaultVm extends ChangeNotifier {
         getOwnedCards(selectedExpansion!.id);
       }
     });
+    // scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
     expansionSearchController.dispose();
     cardSearchController.dispose();
+    // scrollController.dispose();
     _expansionSearchDebounce?.cancel();
     super.dispose();
   }
@@ -68,6 +79,7 @@ class MyVaultVm extends ChangeNotifier {
     List<CardInList>? cardList,
     int? totalCardsInExpansion,
     ExpansionOptions? selectedExpansion,
+    int? currentLastOwnedCard
   }) {
       _isLoading = isLoading ?? _isLoading;
       _isExpansionListLoading = isExpansionListLoading ?? _isExpansionListLoading;
@@ -88,27 +100,96 @@ class MyVaultVm extends ChangeNotifier {
       // Nếu selectedExpansion là null (không truyền) thì giữ nguyên giá trị cũ (_selectedExpansion)
       _selectedExpansion = selectedExpansion ?? _selectedExpansion;
 
+      _currentLastOwnedCard = currentLastOwnedCard ?? _currentLastOwnedCard;
+
       notifyListeners();
   }
 
   //// GET OWNED CARDS BY EXPANSION ID
-  Future<void> getOwnedCards(int expansionId) async {
-    _setState(isCardListLoading: true, cardListErrorMessage: null);
+  Future<void> getOwnedCards(int expansionId, {bool isLoadMore = false}) async {
+    print('⚡ getOwnedCards called. isLoadMore: $isLoadMore');
+    print('   - Status: Loading: $_isLoading | LoadingMore: $_isLoadingMore');
+    print('   - Pagination: Page $_currentPage / $_totalPages');
 
-    final queryParams = _currentOwnedCardQueryParams.copyWith(expansionId: expansionId);
+    if (_isCardListLoading || _isLoadingMore) {
+      print('⛔ Blocked: Already loading');
+      return; // nếu đang load dở thì nghỉ
+    }
 
-    final res = await _cardService.getOwnedCards(queryParams);
+    if (isLoadMore && _currentPage >= _totalPages) {
+      print('⛔ Blocked: Reached end of pages');
+      return; // hoặc đã hết trang cũng nghỉ
+    }
+
+    if (isLoadMore) {
+      _isLoadingMore = true;
+      _currentPage++;
+      notifyListeners();
+    } else {
+      _setState(isCardListLoading: true, cardListErrorMessage: null); // nếu đang load (refresh)
+      _currentPage = 1; // thì reset trang về 1
+      _cardList = []; // và xoá hết list cũ
+    }
+
+    _currentOwnedCardQueryParams = _currentOwnedCardQueryParams.copyWith(
+      currentPage: _currentPage,
+      expansionId: expansionId,
+    );
+
+    final res = await _cardService.getOwnedCards(_currentOwnedCardQueryParams);
 
     if (res.data != null && res.statusCode == 200) {
-      _setState(
-        isCardListLoading: false,
-        totalCardsInExpansion: res.data!.totalCards,
-        cardList: res.data!.cards,
-      );
+      if (res.paginationMetadata != null) {
+        _totalPages = res.paginationMetadata!.totalPages;
+        notifyListeners();
+      }
+
+      _totalCardsInExpansion = res.data!.totalCards;
+      print('_totalCardsInExpansion: $_totalCardsInExpansion, _totalPages: $_totalPages (${res.paginationMetadata!.totalPages}, _currentPage: $_currentPage (${res.paginationMetadata!.currentPage}))');
+
+      _currentLastOwnedCard = res.data!.cards.last.expansionIndex;
+
+      // LOGIC QUAN TRỌNG:
+      // Nếu là Load More -> Nối list cũ + list mới
+      // Nếu là Load đầu -> Lấy list mới
+      final newCards = res.data!.cards;
+
+      if (isLoadMore) {
+        _cardList.addAll(newCards);
+        _isLoadingMore = false;
+        notifyListeners();
+      } else {
+        _setState(
+          isCardListLoading: false, 
+          cardList: newCards, 
+          totalCardsInExpansion: res.data!.totalCards,
+          currentLastOwnedCard: res.data!.cards.last.expansionIndex,
+        );
+      }
     } else {
-      _setState(isCardListLoading: false, cardListErrorMessage: res.message ?? 'Failed to fetch owned cards');
+      // Xử lý lỗi...
+      if (isLoadMore) {
+        _isLoadingMore = false; 
+        _currentPage--; // Back lại page cũ nếu lỗi
+        notifyListeners();
+      } else {
+        _setState(isCardListLoading: false, cardListErrorMessage: res.message);
+      }
     }
   }
+
+  // void _onScroll() {
+  //   // Check xem controller đã gắn vào UI chưa (hasClients)
+  //   if (!scrollController.hasClients) return;
+
+  //   // Check xem đã chọn expansion chưa
+  //   if (_selectedExpansion == null) return;
+    
+  //   // nếu còn cách đáy 200px thì load more
+  //   if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
+  //     getOwnedCards(_selectedExpansion!.id, isLoadMore: true);
+  //   }
+  // }
 
   //// GET EXPANSION LIST
   Future<void> getExpansionList() async {
