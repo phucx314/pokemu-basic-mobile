@@ -5,6 +5,7 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pokemu_basic_mobile/common/animations/rare_glow_border_fx.dart';
+import 'package:pokemu_basic_mobile/viewmodels/auth_vm.dart';
 import 'package:pokemu_basic_mobile/viewmodels/open_pack_vm.dart';
 import 'package:pokemu_basic_mobile/views/components/pokemub_button.dart';
 import 'package:provider/provider.dart';
@@ -128,7 +129,21 @@ class _PackOpenState extends State<PackOpen> {
           children: [
             ParkinsansText(text: vm.errorMessage!, color: pokemubPrimaryColor),
             const SizedBox(height: 16),
-            PokemubButton(label: 'Go back', onTap: () {context.go(NamedRoutes.mainLayout);}, height: 36, width: 120, hasBorder: true, fillColor: pokemubBackgroundColor, labelColor: pokemubTextColor, ),
+            PokemubButton(
+              label: 'Go back', 
+              onTap: () {
+                final authVm = context.read<AuthVm>();
+
+                authVm.getMe();
+                
+                context.go(NamedRoutes.mainLayout);
+              }, 
+              height: 36, 
+              width: 120, 
+              hasBorder: true, 
+              fillColor: pokemubBackgroundColor, 
+              labelColor: pokemubTextColor, 
+            ),
           ],
         ),
       );
