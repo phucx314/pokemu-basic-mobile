@@ -36,11 +36,16 @@ class _MyVaultState extends State<MyVault> {
   }
 
   void _onScroll() {
+    // Check xem có client chưa (để tránh lỗi Red Screen)
+    if (!_scrollController.hasClients) return;
+
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
       final vm = context.read<MyVaultVm>();
       
-      if (vm.selectedExpansion != null) {
+      // Check thêm điều kiện isLoadingMore để đỡ spam API
+      if (vm.selectedExpansion != null && !vm.isLoadingMore) {
         vm.getOwnedCards(vm.selectedExpansion!.id, isLoadMore: true);
+        print('🚀 Trigger Load More (Search/Slot)!'); // Log check
       }
     }
   }
@@ -48,6 +53,8 @@ class _MyVaultState extends State<MyVault> {
   @override
   Widget build(BuildContext context) {
     final myVaultVm = context.watch<MyVaultVm>();
+
+    final isSearching = myVaultVm.cardSearchController.text.isNotEmpty;
 
     return SafeArea(
       child: Stack(
@@ -93,57 +100,59 @@ class _MyVaultState extends State<MyVault> {
                         hasActionButton: true, 
                         actionButtonIcon: TablerIcons.search,
                         controller: myVaultVm.cardSearchController,
+                        actionButtonOnTap: () {
+                          if (myVaultVm.selectedExpansion == null) {
+                            myVaultVm.getLatestExpansion();
+                          }
+
+                          // QUAN TRỌNG: Reset cuộn về đầu khi bấm tìm kiếm
+                          if (_scrollController.hasClients) {
+                              _scrollController.jumpTo(0);
+                          }
+
+                          myVaultVm.onSearchCardButtonTap(myVaultVm.selectedExpansion!.id);
+                        },
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16,),
                 Expanded(
-                  child: GridView.builder(
-                    controller: _scrollController,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      childAspectRatio: 1214/1695,
-                    ), 
-                    itemCount: myVaultVm.currentLastOwnedCard,
-                    itemBuilder: (context, index) {
-                      int currExpansionIndex = index + 1;
-
-                      String formattedIndex = (index + 1).toString().padLeft(3, '0');
-
-                      final ownedCard = myVaultVm.cardList
-                        .cast<model.CardInList?>()
-                        .firstWhere(
-                          (card) => card?.expansionIndex == currExpansionIndex,
-                          orElse: () => null,
-                        );
-
-                      return (ownedCard != null) 
-                        ? GestureDetector(
-                          onTap: () {
-                            _zoomCard(context, ownedCard);
-                          },
-                          child: CachedNetworkImage(
-                            imageUrl: ownedCard.cardImage,
-                            cacheManager: cacheManagerConfig,
-                            placeholder: (context, url) => const Center(child: PokemubLoading()),
-                            errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
-                          ),
-                        )
-                        : Container(
-                        height: 12, 
-                        width: 12, 
-                        decoration: BoxDecoration(
-                          color: pokemubTextColor10,
-                          borderRadius: BorderRadius.circular(4)
-                        ), 
-                        child: Center(
-                          child: ParkinsansText(text: formattedIndex, fontSize: 14, fontWeight: FontWeight.bold, color: pokemubTextColor30,),
-                        ),
-                      );
+                  child: NotificationListener<ScrollMetricsNotification>(
+                    onNotification: (notification) {
+                      // Logic: Nếu list quá ngắn (không cuộn được) VÀ vẫn còn trang sau
+                      // Thì kích hoạt load more ngay lập tức
+                      if (notification.metrics.maxScrollExtent == 0) {
+                        final vm = context.read<MyVaultVm>();
+                        
+                        // Check điều kiện y hệt trong _onScroll
+                        if (vm.selectedExpansion != null && 
+                            !vm.isLoadingMore && 
+                            !vm.isCardListLoading && // Quan trọng: Đừng load nếu đang load dở cái cũ
+                            (vm.currentPage ?? 0) < (vm.totalPages ?? 0)) { // Check còn trang sau ko
+                            
+                            print('🚀 Trigger Auto-Fill (List too short)!');
+                            vm.getOwnedCards(vm.selectedExpansion!.id, isLoadMore: true);
+                        }
+                      }
+                      return false; // Để sự kiện tiếp tục bubble lên nếu cần
                     },
+                    child: GridView.builder(
+                      controller: _scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 5,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 8,
+                        childAspectRatio: 1214/1695,
+                      ), 
+                      itemCount: isSearching ? myVaultVm.cardList.length : myVaultVm.currentLastOwnedCard,
+                      itemBuilder: (context, index) {
+                        return isSearching 
+                          ? _buildListedView(index, myVaultVm, context) 
+                          : _buildSlotsView(index, myVaultVm, context);
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16,),
@@ -151,6 +160,59 @@ class _MyVaultState extends State<MyVault> {
             ),
           )
         ],
+      ),
+    );
+  }
+
+  StatelessWidget _buildSlotsView(int index, MyVaultVm myVaultVm, BuildContext context) {
+    int currExpansionIndex = index + 1;
+    
+    String formattedIndex = (index + 1).toString().padLeft(3, '0');
+    
+    final ownedCard = myVaultVm.cardList
+      .cast<model.CardInList?>()
+      .firstWhere(
+        (card) => card?.expansionIndex == currExpansionIndex,
+        orElse: () => null,
+      );
+    
+    return (ownedCard != null) 
+      ? GestureDetector(
+        onTap: () {
+          _zoomCard(context, ownedCard);
+        },
+        child: CachedNetworkImage(
+          imageUrl: ownedCard.cardImage,
+          cacheManager: cacheManagerConfig,
+          placeholder: (context, url) => const Center(child: PokemubLoading()),
+          errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
+        ),
+      )
+      : Container(
+      height: 12, 
+      width: 12, 
+      decoration: BoxDecoration(
+        color: pokemubTextColor10,
+        borderRadius: BorderRadius.circular(4)
+      ), 
+      child: Center(
+        child: ParkinsansText(text: formattedIndex, fontSize: 14, fontWeight: FontWeight.bold, color: pokemubTextColor30,),
+      ),
+    );
+  }
+
+  StatelessWidget _buildListedView(int index, MyVaultVm myVaultVm, BuildContext context) {
+    final ownedCard = myVaultVm.cardList[index];
+    
+    return GestureDetector(
+      onTap: () {
+        _zoomCard(context, ownedCard);
+      },
+      child: CachedNetworkImage(
+        imageUrl: ownedCard.cardImage,
+        cacheManager: cacheManagerConfig,
+        placeholder: (context, url) => const Center(child: PokemubLoading()),
+        errorWidget: (context, url, error) => const Icon(TablerIcons.error_404),
       ),
     );
   }
@@ -270,6 +332,10 @@ class _MyVaultState extends State<MyVault> {
                       child: PokemubButton(
                         label: 'Confirm', 
                         onTap: () {
+                          if (_scrollController.hasClients) {
+                              _scrollController.jumpTo(0);
+                          }
+
                           vm.resetSearchTextfields();
 
                           if (vm.selectedExpansion != null) {

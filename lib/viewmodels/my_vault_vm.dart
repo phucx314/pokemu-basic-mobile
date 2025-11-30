@@ -56,14 +56,12 @@ class MyVaultVm extends ChangeNotifier {
         getOwnedCards(selectedExpansion!.id);
       }
     });
-    // scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
     expansionSearchController.dispose();
     cardSearchController.dispose();
-    // scrollController.dispose();
     _expansionSearchDebounce?.cancel();
     super.dispose();
   }
@@ -96,10 +94,7 @@ class MyVaultVm extends ChangeNotifier {
       }
 
       _totalCardsInExpansion = totalCardsInExpansion ?? _totalCardsInExpansion;
-
-      // Nếu selectedExpansion là null (không truyền) thì giữ nguyên giá trị cũ (_selectedExpansion)
       _selectedExpansion = selectedExpansion ?? _selectedExpansion;
-
       _currentLastOwnedCard = currentLastOwnedCard ?? _currentLastOwnedCard;
 
       notifyListeners();
@@ -111,17 +106,24 @@ class MyVaultVm extends ChangeNotifier {
       return; // nếu đang load dở thì nghỉ
     }
 
-    if (isLoadMore && _currentPage >= _totalPages) {
-      _currentLastOwnedCard = _totalCardsInExpansion;
-      notifyListeners();
-      return; // hoặc đã hết trang cũng nghỉ
-    }
+    String activeSearchKey;
 
     if (isLoadMore) {
+      if (isLoadMore && _currentPage >= _totalPages) {
+        _currentLastOwnedCard = _totalCardsInExpansion;
+        notifyListeners();
+        return; // hoặc đã hết trang cũng nghỉ
+      }
+
       _isLoadingMore = true;
       _currentPage++;
       notifyListeners();
+
+      activeSearchKey = _currentOwnedCardQueryParams.searchKey ?? '';
     } else {
+      // QUAN TRỌNG: Nếu là search mới/refresh
+      activeSearchKey = cardSearchController.text.trim();
+
       _setState(isCardListLoading: true, cardListErrorMessage: null); // nếu đang load (refresh)
       _currentPage = 1; // thì reset trang về 1
       _cardList = []; // và xoá hết list cũ
@@ -130,6 +132,7 @@ class MyVaultVm extends ChangeNotifier {
     _currentOwnedCardQueryParams = _currentOwnedCardQueryParams.copyWith(
       currentPage: _currentPage,
       expansionId: expansionId,
+      searchKey: activeSearchKey,
     );
 
     final res = await _cardService.getOwnedCards(_currentOwnedCardQueryParams);
@@ -140,10 +143,11 @@ class MyVaultVm extends ChangeNotifier {
         notifyListeners();
       }
 
-      if (res.data!.acquiredCards > 0) {
-        _currentLastOwnedCard = res.data!.cards.last.expansionIndex;
+      if (res.data!.cards.isNotEmpty) {
+         _currentLastOwnedCard = res.data!.cards.last.expansionIndex;
       } else {
-        _currentLastOwnedCard = _totalCardsInExpansion;
+         // Nếu search không ra gì, hoặc chưa có thẻ nào
+         _currentLastOwnedCard = 0; 
       }
 
       final newCards = res.data!.cards;
@@ -180,20 +184,20 @@ class MyVaultVm extends ChangeNotifier {
     }
   }
 
-  // void _onScroll() {
-  //   // Check xem controller đã gắn vào UI chưa (hasClients)
-  //   if (!scrollController.hasClients) return;
+  void onSearchCardButtonTap(int expansionId) {
+    final newText = cardSearchController.text.trim();
 
-  //   // Check xem đã chọn expansion chưa
-  //   if (_selectedExpansion == null) return;
-    
-  //   // nếu còn cách đáy 200px thì load more
-  //   if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
-  //     getOwnedCards(_selectedExpansion!.id, isLoadMore: true);
-  //   }
-  // }
+    if (newText == _currentOwnedCardQueryParams.searchKey) return;
 
-  //// GET EXPANSION LIST
+    _currentOwnedCardQueryParams = _currentOwnedCardQueryParams.copyWith(
+      searchKey: cardSearchController.text,
+      currentPage: 1,
+    );
+
+    getOwnedCards(expansionId);
+  }
+
+  //// GET EXPANSION LIST (ONLY 16 LATEST EXPANSIONS TO BE SHOWN)
   Future<void> getExpansionList() async {
     _setState(isExpansionListLoading: true, expansionListErrorMessage: null);
 
@@ -224,7 +228,6 @@ class MyVaultVm extends ChangeNotifier {
         searchKey: expansionSearchController.text,
         currentPage: 1,
       );
-      // notifyListeners();
       getExpansionList();
     });
   }
@@ -237,7 +240,6 @@ class MyVaultVm extends ChangeNotifier {
 
   void selectExpansion(ExpansionOptions expansion) { // sau này nên đổi qua model đầy đủ hơn
     if (selectedExpansion != null && selectedExpansion?.id == expansion.id) {
-      // _setState(selectedExpansion: null);
       _selectedExpansion = null;
       notifyListeners();
       return;
