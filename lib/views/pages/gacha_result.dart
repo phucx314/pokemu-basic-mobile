@@ -16,6 +16,7 @@ import '../../common/constants/colors.dart';
 import '../../common/utils/cache_manager_config.dart';
 import '../../models/card.dart' as model;
 import '../../viewmodels/main_layout_vm.dart';
+import '../../viewmodels/my_vault_vm.dart';
 import '../components/pokemub_button.dart';
 import '../components/pokemub_loading.dart';
 
@@ -98,12 +99,15 @@ class GachaResult extends StatelessWidget {
                       final authVm = context.read<AuthVm>();
                       final shopVm = context.read<ShopVm>();
                       final homeVm = context.read<HomeVm>();
+                      final myVaultVm = context.read<MyVaultVm>();
 
                       context.go(NamedRoutes.mainLayout);
 
                       await Future.wait([
                         homeVm.getFeaturedPacks(),
                         shopVm.getAllAvailablePacks(),
+                        if (myVaultVm.selectedExpansion == null) myVaultVm.getLatestExpansion(),
+                        myVaultVm.getOwnedCards(myVaultVm.selectedExpansion!.id),
                       ]);
 
                       mainLayoutVm.goToVault();
